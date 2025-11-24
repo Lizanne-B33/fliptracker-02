@@ -10,12 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+from decouple import config
 from pathlib import Path
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-from decouple import config
 
 
 # Quick-start development settings - unsuitable for production
@@ -23,9 +23,10 @@ from decouple import config
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -39,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Modules
     'corsheaders',
     'rest_framework',
@@ -186,12 +187,12 @@ SIMPLE_JWT = {
     # A string like "example.com", or None for standard domain cookie.
     'AUTH_COOKIE_DOMAIN': None,
     # Whether the auth cookies should be secure (https:// only).
-    'AUTH_COOKIE_SECURE': True, 
+    'AUTH_COOKIE_SECURE': True,
     # Http only cookie flag.It's not fetch by javascript.
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_PATH': '/',        # The path of the auth cookie.
     # Whether to set the flag restricting cookie leaks on cross-site requests. This can be 'Lax', 'Strict', or None to disable the flag.
-    'AUTH_COOKIE_SAMESITE': "None", # TODO: Modify to Lax
+    'AUTH_COOKIE_SAMESITE': "None",  # TODO: Modify to Lax
 }
 
 
