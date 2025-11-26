@@ -1,122 +1,150 @@
-# Code Attribution: https://github.com/namodynamic/inventory-management-api/blob/main/inventory/models.py
-
 from django.db import models
-from django.utils import timezone
-from django.core.validators import MinValueValidator
-import User
-
-# Create your models here.
+from django.urls import reverse
 
 
-## ============ CLASSIFICATION =============== ##
-# Domains are specific to a user's sign in session.
-# A user will sign in and select one of the domains.
-# This value will be set and used for category and item filters.
-
-
-class Domain(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True, null=True)
+class ProductType(models.Model):    # High level product types (furniture, clothing, decor)
+    name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
 
-    class meta:
-        verbose_name_plural = "Domains"
 
-# Categories are useful for analysis or insights.
-# The categories are related to Domains in a 1 : 1 relationship.
-
-
+# Categories related to InvType to group inventory items.
 class Category(models.Model):
-    name = models.TextField(max_length=255, unique=True)
-    description = models.TextField(blank=True, null=True)
-    domain = models.ForeignKey("Domain", verbose_name=(
-        "Domains"), on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
-
-    class meta:
-        verbose_name_plural = 'Categories'
-
-## ================= INVENTORY ===================== ##
-# Inventory Items are the objects that store each item.
-# They are related to the User, as well as to categories.
-# One Inventory Item can have many Categories, and Categories can have many Inventory Items.
-
-
-class Status(models.TextChoices):
-    # Status Options
-    PURCHASED = 'Purchased'
-    READY_TO_POST = 'Ready to Post'
-    POSTED = 'Posted'
-    SOLD = 'Sold'
-
-
-class InventoryItems(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-    quantity = models.IntegerField(validators=[MinValueValidator(0)])
-    cost_each = models.DecimalField(
-        max_digits=5, decimal_places=2, validators=[MinValueValidator(0)])
-    category = models.ManyToManyField("app.Model", verbose_name=_("Categories"))(
-        Category, on_delete=models.SET_NULL, null=True, related_name='items')
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, related_name='inventory_items')
-    date_added = models.DateTimeField(auto_now_add=True)
-    item_img = models.ImageField(upload_to='media',
-                                 height_field=None,
-                                 width_field=None,
-                                 max_length=100,
-                                 null=True)
-    last_updated = models.DateTimeField(auto_now=True)
-    status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.PURCHASED,
-    )
-    calculated_price = models.DecimalField(
-        max_digits=5, decimal_places=2, validators=[MinValueValidator(0)])
-    price_override = models.BooleanField(default=False)
-    sales_price = models.DecimalField(
-        max_digits=5, decimal_places=2, validators=[MinValueValidator(0)])
-    commission = models.DecimalField(
-        max_digits=2, decimal_places=2, default=.25)
-    sold = models.BooleanField(default=False)
-    profit = models.DecimalField(
-        max_digits=5, decimal_places=2, validators=[MinValueValidator(0)])
-
-    def __str__(self):
-        return self.name
+    name = models.CharField(max_length=100)
+    inv_type = models.ForeignKey(ProductType, on_delete=models.CASCADE,
+                                 related_name="categories", related_query_name="category")
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
+        verbose_name_plural = "categories"
 
-    def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "quantity": self.quantity,
-            "category": self.category,
-            "owner": self.owner,
-            "date_added": self.date_added,
-            "last_updated": self.last_updated,
-            "item_img": self.item_img,
-            "status": self.status,
-            "calculated_price": self.calculated_price,
-            "price_override": self.price_override,
-            "sales_price": self.sales_price,
-            "commission": self.commission,
-            "sold": self.sold,
-            "profit": self.profit,
-        }
+    def __str__(self):
+        return self.name
 
-   # TODO
-   # Return list of all inventory
-   # return list of inventory in each section (purchased, ready to post, posted, sold)
-   # serializing of the classes and domains.
-   # Build a freeform tags table.
-   # Return tags by category
-   # update user to include Domain
+
+# List comparative items' urls.  Documents name and pricing.
+class Comp(models.Model):
+    path = models.URLField(max_length=200)
+    comp_name = models.CharField(max_length=255, blank=True)
+    comp_price = models.DecimalField(
+        max_digits=7, decimal_places=2, blank=True)
+    inv_item = models.ForeignKey(
+        "Product", on_delete=models.PROTECT, related_name='comps')
+
+    class Meta:
+        ordering = ["comp_price"]
+
+    def __str__(self):
+        return self.path
+
+
+class Tag(models.Model):
+    # Choices
+    STYLE = 'style_aesthetics'
+    MATERIAL = 'material'
+    CONTEXT = 'context_placement'
+    TAG_CHOICES = [
+        (STYLE, 'Styles & Aesthetics'),
+        (MATERIAL, 'Materials'),
+        (CONTEXT, 'Context / Placement'),
+    ]
+
+    name = models.CharField(max_length=50)
+    tag_category = models.CharField(
+        max_length=50, choices=TAG_CHOICES, default='STYLE')
+
+    def __str__(self):
+        return self.name
+
+
+class UOM(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
+class SoldInventoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status="sold")
+
+
+class ReadyInventoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status="ready_to_list")
+
+
+class ListedInventoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status="listed")
+
+
+class Product(models.Model):
+    # Choices
+    ACQUIRED = 'acquired'
+    READY = 'ready_to_list'
+    POSTED = 'listed'
+    SOLD = 'sold'
+    REMOVED = 'removed'
+    STATUS_CHOICES = [
+        (ACQUIRED, 'Acquired'),
+        (READY, 'Ready to list'),
+        (POSTED, 'Listed'),
+        (SOLD, 'Sold'),
+        (REMOVED, 'Removed'),
+    ]
+
+    NEW = "Like new"
+    RESTORED = "Restored"
+    BEST = "Used: Excellent"
+    BETTER = "Used: Very Good"
+    GOOD = "Used: Good"
+    CONDITION_CHOICES = [
+        (NEW, "Like new"),
+        (RESTORED, "Restored"),
+        (BEST, "Used: Excellent"),
+        (BETTER, "Used: Very Good"),
+        (GOOD, "Used: Good"),
+    ]
+
+    owner = models.ForeignKey(
+        'user.User', related_name="items", on_delete=models.PROTECT
+    )
+    title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='images/')
+    cost = models.DecimalField(max_digits=8, decimal_places=2)
+    cost_unit = models.ForeignKey(
+        "UOM", on_delete=models.PROTECT, related_name='cost_items')
+    ai_description = models.TextField(blank=True)
+    description = models.TextField(blank=True)
+    qty = models.IntegerField(default=1)
+    price = models.DecimalField(
+        max_digits=6, decimal_places=2, blank=True, null=True)
+    price_unit = models.ForeignKey(
+        "UOM", on_delete=models.PROTECT, related_name='price_uom')
+    category = models.ForeignKey(
+        "Category", on_delete=models.PROTECT, blank=True, null=True)
+    brand = models.CharField(max_length=255, blank=True)
+    color = models.CharField(max_length=30, blank=True)
+    size = models.CharField(max_length=50, blank=True)
+    condition = models.CharField(
+        max_length=20, choices=CONDITION_CHOICES, default=RESTORED)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=ACQUIRED)
+    tags = models.ManyToManyField(Tag, related_name="items")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ["title"]
+
+    objects = models.Manager()
+    sold_items = SoldInventoryManager()
+    ready_items = ReadyInventoryManager()
+
+    def get_absolute_url(self):
+        return reverse("product_detail", kwargs={"pk": self.pk})
