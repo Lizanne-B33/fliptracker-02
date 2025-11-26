@@ -1,3 +1,11 @@
+"""
+Sources:
+https://docs.djangoproject.com/en/5.2/ref/models/fields/
+https://www.django-rest-framework.org/api-guide/generic-views/#get_querysetself
+
+
+"""
+
 from django.db import models
 from django.urls import reverse
 
@@ -21,22 +29,6 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
-
-# List comparative items' urls.  Documents name and pricing.
-class Comp(models.Model):
-    path = models.URLField(max_length=200)
-    comp_name = models.CharField(max_length=255, blank=True)
-    comp_price = models.DecimalField(
-        max_digits=7, decimal_places=2, blank=True)
-    inv_item = models.ForeignKey(
-        "Product", on_delete=models.PROTECT, related_name='comps')
-
-    class Meta:
-        ordering = ["comp_price"]
-
-    def __str__(self):
-        return self.path
 
 
 class Tag(models.Model):
@@ -67,16 +59,19 @@ class UOM(models.Model):
 
 class SoldInventoryManager(models.Manager):
     def get_queryset(self):
+        user = self.request.user
         return super().get_queryset().filter(status="sold")
 
 
 class ReadyInventoryManager(models.Manager):
     def get_queryset(self):
+        user = self.request.user
         return super().get_queryset().filter(status="ready_to_list")
 
 
 class ListedInventoryManager(models.Manager):
     def get_queryset(self):
+        user = self.request.user
         return super().get_queryset().filter(status="listed")
 
 
@@ -111,7 +106,7 @@ class Product(models.Model):
     owner = models.ForeignKey(
         'user.User', related_name="items", on_delete=models.PROTECT
     )
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, blank=True)
     image = models.ImageField(upload_to='images/')
     cost = models.DecimalField(max_digits=8, decimal_places=2)
     cost_unit = models.ForeignKey(
@@ -124,7 +119,7 @@ class Product(models.Model):
     price_unit = models.ForeignKey(
         "UOM", on_delete=models.PROTECT, related_name='price_uom')
     category = models.ForeignKey(
-        "Category", on_delete=models.PROTECT, blank=True, null=True)
+        "Category", on_delete=models.PROTECT, default="Uncategorized")
     brand = models.CharField(max_length=255, blank=True)
     color = models.CharField(max_length=30, blank=True)
     size = models.CharField(max_length=50, blank=True)

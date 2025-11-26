@@ -1,10 +1,21 @@
+"""
+Sources:
+https://www.django-rest-framework.org/tutorial/quickstart/#quickstart
+
+"""
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-# from .views import ItemViewSet
+from .views import ProductFastEntryViewSet, ProductViewSet
 
 # router used for standard CRUD work.
 router = DefaultRouter()
-# router.register(r'items', ItemViewSet)
+router.register(r'products/fast', ProductFastEntryViewSet,
+                basename='product-fast')
+router.register(r'products/full', ProductViewSet, basename='product-full')
 
 app_name = 'inventory'  # required for namespace
 
-urlpatterns = router.urls
+urlpatterns = [
+    path("", include(router.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+]

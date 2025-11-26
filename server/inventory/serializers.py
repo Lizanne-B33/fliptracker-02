@@ -1,32 +1,33 @@
+"""
+Sources:
+https://www.django-rest-framework.org/tutorial/quickstart/#quickstart
+https://www.django-rest-framework.org/api-guide/fields/
+
+"""
+
 from rest_framework import serializers
-from .models import Product, Tag, Comp, Category
+from .models import Product, Tag, Category
 from user.models import User  # Importing from another app
 
 
 class ProductCreateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = InvItem
+        model = Product
         fields = '__all__'
         read_only_fields = ['owner', 'created_at', 'updated_at']
 
 
-class ProductAcquireSerializer(serializers.ModelSerializer):
+class ProductFastEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = 'image', 'cost', 'cost_uom', 'ai_description', 'comparative', 'qty'
+        fields = 'image', 'cost', 'cost_unit', 'ai_description', 'qty', 'price', 'price_unit', 'condition'
         read_only_fields = ['owner', 'created_at', 'updated_at']
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
-
-
-class CompSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comp
         fields = '__all__'
 
 
