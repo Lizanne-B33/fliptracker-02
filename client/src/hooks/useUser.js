@@ -1,24 +1,21 @@
-import useAuth from "./useAuth"
-import useAxiosPrivate from "./usePrivate"
+import { useCallback } from 'react';
+import useAuth from './useAuth';
+import useAxiosPrivate from './usePrivate';
 
 export default function useUser() {
+  const { isLoggedIn, setUser } = useAuth();
+  const axiosPrivateInstance = useAxiosPrivate();
 
-    const { isLoggedIn, setUser } = useAuth()
-    const axiosPrivateInstance = useAxiosPrivate()
+  const getUser = useCallback(async () => {
+    if (!isLoggedIn) return;
 
-    async function getUser() {
-        if (!isLoggedIn) {
-            return
-        }
-
-        try {
-            const { data } = await axiosPrivateInstance.get('auth/user')
-
-            setUser(data)
-        } catch (error) {
-            console.log(error.response)
-        }
+    try {
+      const { data } = await axiosPrivateInstance.get('auth/user');
+      setUser(data);
+    } catch (error) {
+      console.log(error.response);
     }
+  }, [isLoggedIn, axiosPrivateInstance, setUser]);
 
-    return getUser
+  return getUser;
 }

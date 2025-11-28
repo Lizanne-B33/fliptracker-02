@@ -26,7 +26,7 @@ export default function Register() {
     try {
       const response = await axiosInstance.post(
         "auth/register",
-        JSON.stringify(data)
+        JSON.stringify(data),
       );
 
       setLoading(false);

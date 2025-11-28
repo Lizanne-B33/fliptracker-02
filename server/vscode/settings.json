@@ -1,0 +1,35 @@
+{
+  // === PYTHON FORMATTING (autopep8) ===
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.formatOnSave": true
+  },
+  // Autopep8 setting is correctly isolated here
+  "autopep8.args": ["--max-line-length=79"],
+
+  // === VS CODE FILE ASSOCIATIONS ===
+  "files.associations": {
+    // Ensures .html files are treated as Django templates
+    "*.html": "django-html"
+  },
+  // === FRONTEND FORMATTING (Prettier) ===
+  // Prettier handles pure HTML/CSS/JS outside of Django template regions
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // === DJANGO TEMPLATE FORMATTING (djLint) ===
+  // This is the critical block for djlint to work
+  "[django-html]": {
+    "editor.defaultFormatter": "monosans.djlint",
+    "editor.formatOnSave": true
+  },
+
+  // === DJLINT BEHAVIORAL SETTINGS ===
+  // Style settings (indent, max_line_length, etc.) are in pyproject.toml
+  "djlint.formatAttributeTemplateTags": true,
+  "djlint.enableLinting": true,
+  "djlint.useVenv": true
+}
