@@ -25,7 +25,7 @@ const FeatureData = [
     icon: 'inventory_2',
     title: 'Quick Search Inventory',
     text: 'Find products instantly with powerful search and filter options.',
-    id: 'inv_11',
+    id: 'inv_1',
   },
   {
     group: 'Inventory Intelligence',
@@ -53,14 +53,14 @@ const FeatureData = [
     icon: 'insights',
     title: 'Sales Details',
     text: 'Gain deeper insights into trends: best-selling brands, categories, sell-through rates, and aggregates.',
-    id: 'ins_1',
+    id: 'ins_2',
   },
   {
     group: 'Insights',
     icon: 'trending_up',
     title: 'Trends',
     text: 'Compare performance year-over-year and anticipate future sales trends across channels and locations.',
-    id: 'ins_2',
+    id: 'ins_3',
   },
   {
     group: 'Reports',

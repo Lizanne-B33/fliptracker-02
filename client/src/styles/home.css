@@ -5,3 +5,20 @@
 .functionCards {
   background-color: #e4ded5;
 }
+
+@media (max-width: 1000px) {
+  .functionCards {
+    display: none;
+  }
+  .mobile_accordion {
+    display: block;
+  }
+}
+@media (min-width: 1000px) {
+  .functionCards {
+    display: block;
+  }
+  .mobile_accordion {
+    display: none;
+  }
+}

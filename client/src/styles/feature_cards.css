@@ -9,18 +9,18 @@
     /* weight */ 'GRAD' 0,
     /* grade */ 'opsz' 24; /* optical size */
 }
-.card-body {
+.feature-body {
   background-color: #f5f1ea;
   min-height: 230px;
   height: 100%;
   overflow: auto;
 }
-.card-title {
+.feature-title {
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-weight: 600;
   margin-bottom: 18px;
 }
-.card-text {
+.feature-text {
   font-family:
     'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
     'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -30,6 +30,7 @@
 }
 
 .feature-group-text {
+  font-style: italic;
 }
 
 .feature-grid {
