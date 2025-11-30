@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { axiosInstance } from "../../api/apiConfig";
+import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { axiosInstance } from '../../api/apiConfig';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -25,15 +25,15 @@ export default function Register() {
 
     try {
       const response = await axiosInstance.post(
-        "auth/register",
-        JSON.stringify(data),
+        'auth/register',
+        JSON.stringify(data)
       );
 
       setLoading(false);
 
       event.target.reset(); //clears all inputs
 
-      navigate("/auth/login");
+      navigate('/auth/login');
     } catch (error) {
       setLoading(false);
       // TODO: handle errors

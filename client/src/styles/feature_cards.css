@@ -1,0 +1,39 @@
+.material-symbols-rounded {
+  font-size: 48px; /* size */
+  color: #8f866e; /* color */
+  margin-bottom: 15px;
+
+  font-variation-settings:
+    'FILL' 0,
+    /* 0 = outline, 1 = filled */ 'wght' 400,
+    /* weight */ 'GRAD' 0,
+    /* grade */ 'opsz' 24; /* optical size */
+}
+.card-body {
+  background-color: #f5f1ea;
+  min-height: 230px;
+  height: 100%;
+  overflow: auto;
+}
+.card-title {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+.card-text {
+  font-family:
+    'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-weight: 400;
+  /* line-height: 26px;*/
+  /* font-size: 16px;*/
+}
+
+.feature-group-text {
+}
+
+.feature-grid {
+  border-radius: 25px;
+  border-color: #51655e;
+  border-width: 1px;
+}

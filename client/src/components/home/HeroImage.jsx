@@ -5,7 +5,7 @@ export default function HeroImage() {
     <div className="hero-img">
       <img
         className="hero-logo me-3"
-        src="/logo-transp.png"
+        src="/images/logo/FT_logo_1920_transp.png"
         alt="FlipTrackr Logo"
         style={{ maxWidth: '392px', aspectRatio: '1/1' }}
       />

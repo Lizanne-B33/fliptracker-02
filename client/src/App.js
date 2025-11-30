@@ -1,11 +1,11 @@
-import { Routes, Navigate, Route } from "react-router-dom";
-import AuthMiddleware from "./middlewares/AuthMiddleware";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import Home from "./pages/Home";
-import User from "./pages/auth/User";
-import PersistLogin from "./components/PersistLogin";
-import Navbar from "./components/Navbar";
+import { Routes, Navigate, Route } from 'react-router-dom';
+import AuthMiddleware from './middlewares/AuthMiddleware';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import Home from './pages/Home';
+import User from './pages/auth/User';
+import PersistLogin from './components/PersistLogin';
+import Navbar from './components/Navbar';
 
 function App() {
   return (

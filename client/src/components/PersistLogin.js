@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-import useAxiosPrivate from "../hooks/usePrivate";
-import useRefreshToken from "../hooks/useRefreshToken";
+import React, { useEffect, useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
+import useAxiosPrivate from '../hooks/usePrivate';
+import useRefreshToken from '../hooks/useRefreshToken';
 
 export default function PersistLogin() {
   const refresh = useRefreshToken();
@@ -21,7 +21,7 @@ export default function PersistLogin() {
 
       try {
         await refresh();
-        const { data } = await axiosPrivate.get("auth/user");
+        const { data } = await axiosPrivate.get('auth/user');
         setUser(data);
       } catch (error) {
         console.log(error?.response);
@@ -37,5 +37,5 @@ export default function PersistLogin() {
     };
   }, []);
 
-  return loading ? "Loading" : <Outlet />;
+  return loading ? 'Loading' : <Outlet />;
 }

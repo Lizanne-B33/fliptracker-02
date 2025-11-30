@@ -1,7 +1,7 @@
-import { axiosPrivateInstance } from "../api/apiConfig";
-import { useEffect } from "react";
-import useAuth from "./useAuth";
-import useRefreshToken from "./useRefreshToken";
+import { axiosPrivateInstance } from '../api/apiConfig';
+import { useEffect } from 'react';
+import useAuth from './useAuth';
+import useRefreshToken from './useRefreshToken';
 
 export default function useAxiosPrivate() {
   const { accessToken, setAccessToken, csrftoken, user } = useAuth();
@@ -10,13 +10,13 @@ export default function useAxiosPrivate() {
   useEffect(() => {
     const requestIntercept = axiosPrivateInstance.interceptors.request.use(
       (config) => {
-        if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${accessToken}`;
-          config.headers["X-CSRFToken"] = csrftoken;
+        if (!config.headers['Authorization']) {
+          config.headers['Authorization'] = `Bearer ${accessToken}`;
+          config.headers['X-CSRFToken'] = csrftoken;
         }
         return config;
       },
-      (error) => Promise.reject(error),
+      (error) => Promise.reject(error)
     );
 
     const responseIntercept = axiosPrivateInstance.interceptors.response.use(
@@ -32,12 +32,12 @@ export default function useAxiosPrivate() {
           const { csrfToken: newCSRFToken, accessToken: newAccessToken } =
             await refresh();
           setAccessToken(newAccessToken);
-          prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-          prevRequest.headers["X-CSRFToken"] = newCSRFToken;
+          prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          prevRequest.headers['X-CSRFToken'] = newCSRFToken;
           return axiosPrivateInstance(prevRequest);
         }
         return Promise.reject(error);
-      },
+      }
     );
 
     return () => {

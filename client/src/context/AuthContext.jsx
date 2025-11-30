@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect, createContext } from 'react';
 
 export const AuthContext = createContext({
   user: {},
@@ -19,11 +19,11 @@ export function AuthContextProvider(props) {
   const [refreshToken, setRefreshToken] = useState();
   const [csrftoken, setCSRFToken] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(
-    JSON.parse(localStorage.getItem("isLoggedIn")) || false,
+    JSON.parse(localStorage.getItem('isLoggedIn')) || false
   );
 
   useEffect(() => {
-    localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
+    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
   }, [isLoggedIn]);
 
   return (

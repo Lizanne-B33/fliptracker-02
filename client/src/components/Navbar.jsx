@@ -1,8 +1,9 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-import useLogout from "../hooks/useLogout";
-import logo from "../media/logo-dark.png";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
+import useLogout from '../hooks/useLogout';
+import logo from '../media/logos/nav_logo.png';
+import '../styles/nav.css';
 
 export default function Navbar() {
   const { isLoggedIn } = useAuth();
@@ -16,9 +17,9 @@ export default function Navbar() {
           <img
             src={logo}
             alt="flipTrackr logo"
-            width="80"
-            height="80"
-            className="d-inline-block align-top me-2"
+            width="50"
+            height="50"
+            className="d-inline-block align-top me-2 nav_logo"
           />
           FlipTrackr
         </NavLink>

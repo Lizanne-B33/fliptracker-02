@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { axiosInstance } from "../../api/apiConfig";
-import useAuth from "../../hooks/useAuth";
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { axiosInstance } from '../../api/apiConfig';
+import useAuth from '../../hooks/useAuth';
 
 export default function Login() {
   const { setAccessToken, setCSRFToken, setIsLoggedIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const fromLocation = location?.state?.from?.pathname || "/";
+  const fromLocation = location?.state?.from?.pathname || '/';
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
@@ -27,15 +27,15 @@ export default function Login() {
 
     try {
       const response = await axiosInstance.post(
-        "auth/login",
+        'auth/login',
         JSON.stringify({
           email,
           password,
-        }),
+        })
       );
 
       setAccessToken(response?.data?.access_token);
-      setCSRFToken(response.headers["x-csrftoken"]);
+      setCSRFToken(response.headers['x-csrftoken']);
       setIsLoggedIn(true);
       setEmail();
       setPassword();

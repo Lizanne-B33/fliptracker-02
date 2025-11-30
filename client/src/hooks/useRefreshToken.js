@@ -1,5 +1,5 @@
-import { axiosInstance } from "../api/apiConfig";
-import useAuth from "./useAuth";
+import { axiosInstance } from '../api/apiConfig';
+import useAuth from './useAuth';
 
 export default function useRefreshToken() {
   const { isLoggedIn, setAccessToken, setCSRFToken } = useAuth();
@@ -9,13 +9,13 @@ export default function useRefreshToken() {
       return;
     }
 
-    const response = await axiosInstance.post("auth/refresh-token");
+    const response = await axiosInstance.post('auth/refresh-token');
     setAccessToken(response.data.access);
-    setCSRFToken(response.headers["x-csrftoken"]);
+    setCSRFToken(response.headers['x-csrftoken']);
 
     return {
       accessToken: response.data.access,
-      csrfToken: response.headers["x-csrftoken"],
+      csrfToken: response.headers['x-csrftoken'],
     };
   };
 
