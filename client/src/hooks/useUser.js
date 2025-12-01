@@ -10,7 +10,7 @@ export default function useUser() {
     if (!isLoggedIn) return;
 
     try {
-      const { data } = await axiosPrivateInstance.get('auth/user');
+      const { data } = await axiosPrivateInstance.get('auth/me');
       setUser(data);
     } catch (error) {
       console.log(error.response);

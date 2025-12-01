@@ -46,7 +46,7 @@ export default function Navbar() {
             {isLoggedIn ? (
               <>
                 <li className="nav-item">
-                  <NavLink className="nav-link" to="/auth/user">
+                  <NavLink className="nav-link" to="/auth/User">
                     User
                   </NavLink>
                 </li>

@@ -21,7 +21,7 @@ export default function PersistLogin() {
 
       try {
         await refresh();
-        const { data } = await axiosPrivate.get('auth/user');
+        const { data } = await axiosPrivate.get('auth/me');
         setUser(data);
       } catch (error) {
         console.log(error?.response);

@@ -5,6 +5,7 @@ import HeroButtons from '../components/home/HeroButtons';
 import FeaturesSection from '../components/home/FeatureSection';
 import '../styles/home.css';
 import FeatureAccordion from '../components/home/FeatureAccordion';
+import UserProfile from '../components/UserProfile';
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <section className="hero">
         <div className="container text-center py-5">
           <div className="row welcome-hero">
+            <UserProfile />
             <HeroImage />
             <HeroText />
             <HeroButtons />

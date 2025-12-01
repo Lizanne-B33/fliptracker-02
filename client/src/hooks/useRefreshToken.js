@@ -9,7 +9,8 @@ export default function useRefreshToken() {
       return;
     }
 
-    const response = await axiosInstance.post('auth/refresh-token');
+    // const response = await axiosInstance.post('auth/refresh-token');
+    const response = await axiosInstance.post('auth/refresh/');
     setAccessToken(response.data.access);
     setCSRFToken(response.headers['x-csrftoken']);
 
