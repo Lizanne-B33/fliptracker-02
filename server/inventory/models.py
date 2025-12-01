@@ -3,7 +3,6 @@ Sources:
 https://docs.djangoproject.com/en/5.2/ref/models/fields/
 https://www.django-rest-framework.org/api-guide/generic-views/#get_querysetself
 
-
 """
 
 from django.db import models
@@ -50,13 +49,6 @@ class Tag(models.Model):
         return self.name
 
 
-class UOM(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
-
 class SoldInventoryManager(models.Manager):
     def get_queryset(self):
         user = self.request.user
@@ -95,39 +87,51 @@ class Product(models.Model):
     BEST = "Used: Excellent"
     BETTER = "Used: Very Good"
     GOOD = "Used: Good"
+    UNDEFINED = "Undefined"
     CONDITION_CHOICES = [
         (NEW, "Like new"),
         (RESTORED, "Restored"),
         (BEST, "Used: Excellent"),
         (BETTER, "Used: Very Good"),
         (GOOD, "Used: Good"),
+        (UNDEFINED, "Undefined")
+    ]
+
+    EA = "Each"
+    PAIR = "Pair"
+    SET = "Set"
+    UOM_CHOICES = [
+        (EA, "Each"),
+        (PAIR, "Pair"),
+        (SET, "Set"),
     ]
 
     owner = models.ForeignKey(
         'user.User', related_name="items", on_delete=models.PROTECT
     )
     title = models.CharField(max_length=255, blank=True)
-    image = models.ImageField(upload_to='images/')
+    prod_image = models.ImageField(upload_to='images/')
     cost = models.DecimalField(max_digits=8, decimal_places=2)
-    cost_unit = models.ForeignKey(
-        "UOM", on_delete=models.PROTECT, related_name='cost_items')
-    ai_description = models.TextField(blank=True)
-    description = models.TextField(blank=True)
+    cost_unit = models.CharField(
+        max_length=15, choices=UOM_CHOICES, default=EA)
+    ai_desc = models.TextField(blank=True)
+    fast_notes = models.TextField(blank=True)
+    user_desc = models.TextField(blank=True)
     qty = models.IntegerField(default=1)
     price = models.DecimalField(
         max_digits=6, decimal_places=2, blank=True, null=True)
-    price_unit = models.ForeignKey(
-        "UOM", on_delete=models.PROTECT, related_name='price_uom')
+    price_unit = models.CharField(
+        max_length=15, choices=UOM_CHOICES, default=EA)
     category = models.ForeignKey(
-        "Category", on_delete=models.PROTECT, default="Uncategorized")
+        "Category", on_delete=models.PROTECT, default=0)
     brand = models.CharField(max_length=255, blank=True)
     color = models.CharField(max_length=30, blank=True)
     size = models.CharField(max_length=50, blank=True)
     condition = models.CharField(
-        max_length=20, choices=CONDITION_CHOICES, default=RESTORED)
+        max_length=20, choices=CONDITION_CHOICES, default=UNDEFINED)
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default=ACQUIRED)
-    tags = models.ManyToManyField(Tag, related_name="items")
+    tags = models.ManyToManyField(Tag, related_name="items", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

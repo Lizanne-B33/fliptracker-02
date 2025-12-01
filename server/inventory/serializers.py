@@ -21,7 +21,7 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
 class ProductFastEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = 'image', 'cost', 'cost_unit', 'ai_description', 'qty', 'price', 'price_unit', 'condition'
+        fields = 'image', 'cost', 'cost_unit', 'ai_description', 'qty', 'price', 'price_unit', 'condition', 'fast_notes'
         read_only_fields = ['owner', 'created_at', 'updated_at']
 
 

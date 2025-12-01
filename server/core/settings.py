@@ -1,12 +1,14 @@
 """
 11/24/2025: Elizabeth Bradshaw
-Base authentication was cloned from:
-Authorization forked from sinansarikaya/django-react-auth
-https://github.com/sinansarikaya/django-react-auth
+    Base authentication was cloned from:
+    Authorization and initial Django/React system:
+        forked from sinansarikaya/django-react-auth
+        For more information on this file, see:
+        https://github.com/sinansarikaya/django-react-auth
 
 Following are:
-Details from the cloned project and enhanced for this project.
-All requirements have been updated to latest release.
+    Details from the cloned project and enhanced for this project.
+    All requirements.txt have been updated to latest release.
 ==================================================================================
 
 Django settings for core project.
@@ -89,6 +91,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+SWAGGER_USE_COMPAT_RENDERERS = False
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
