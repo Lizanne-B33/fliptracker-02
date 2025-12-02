@@ -1,21 +1,26 @@
+// Originally forked - modified with help from AI to use only cookies.
+// the dual Token/Cookies did not work and cost many hours of research
+// Sources: the DUCK, ChatGPT and COPilot.
+// Original Fork: https://github.com/sinansarikaya/django-react-auth
+
+// ===================================================================
+
+import { useNavigate } from 'react-router-dom';
+import { axiosInstance } from '../api/apiConfig';
 import useAuth from './useAuth';
-import { axiosPrivateInstance } from '../api/apiConfig';
 
 export default function useLogout() {
-  const { setUser, setAccessToken, setCSRFToken, setIsLoggedIn } = useAuth();
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
 
-  const logout = async () => {
+  return async (redirect = true) => {
     try {
-      const response = await axiosPrivateInstance.post('auth/logout');
-
-      setAccessToken(null);
-      setCSRFToken(null);
-      setUser({});
-      setIsLoggedIn(false);
-    } catch (error) {
-      console.log(error);
+      await axiosInstance.post('auth/logout/', {}, { withCredentials: true });
+    } catch (err) {
+      console.error('Logout failed:', err);
+    } finally {
+      setUser(null); // clear user state
+      if (redirect) navigate('/auth/login');
     }
   };
-
-  return logout;
 }

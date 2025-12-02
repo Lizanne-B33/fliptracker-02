@@ -1,27 +1,46 @@
+// While not originally part of the fork, this code was added to act
+// as a canary to assure that the authentication is working.
+// As I was struggling with this, the framework seemed fragile and I
+// couldn't tell quickly if something I had done had broken it.
+// Sources: ChatGPT and COPilot.
+
+// ===================================================================
+
 import React, { useEffect, useState } from 'react';
-import { axiosPrivateInstance } from '../api/apiConfig';
+import { useAuth } from '../context/AuthContext';
+import { axiosInstance } from '../api/apiConfig'; // simple instance, no retry
 
 const UserProfile = () => {
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useAuth();
+  const [loading, setLoading] = useState(!user);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (user) {
+      setLoading(false);
+      return;
+    }
+
     const fetchUser = async () => {
       try {
-        const res = await axiosPrivateInstance.get('auth/me');
+        const res = await axiosInstance.get('auth/me/', {
+          withCredentials: true,
+        });
         setUser(res.data);
       } catch (err) {
         console.error('Error fetching user:', err);
-        setError(err.response?.data || 'Request failed');
+        setError(err.response?.data?.detail || null);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, [user, setUser]);
 
-  if (error)
-    return <p style={{ color: 'red' }}>Error: {JSON.stringify(error)}</p>;
-  if (!user) return <p>Loading user...</p>;
+  if (loading) return <p>Loading user...</p>;
+  if (error) return <p style={{ color: 'red' }}>Error: {error}</p>;
+  if (!user) return <p>Welcome, Guest!</p>;
 
   return (
     <div>

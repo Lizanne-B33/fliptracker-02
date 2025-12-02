@@ -1,23 +1,31 @@
+// Originally forked - modified with help from AI to use only cookies.
+// the dual Token/Cookies did not work and cost many hours of research
+// Sources: the DUCK, ChatGPT and COPilot.
+// Original Fork: https://github.com/sinansarikaya/django-react-auth
+
+// ===================================================================
+
 import { axiosInstance } from '../api/apiConfig';
-import useAuth from './useAuth';
+import { useAuth } from '../context/AuthContext';
 
 export default function useRefreshToken() {
-  const { isLoggedIn, setAccessToken, setCSRFToken } = useAuth();
+  const { setAccessToken } = useAuth();
+  let refreshPromise = null;
 
   const refresh = async () => {
-    if (!isLoggedIn) {
-      return;
+    if (!refreshPromise) {
+      refreshPromise = axiosInstance
+        .post('auth/refresh/', {}, { withCredentials: true })
+        .then((res) => {
+          const newAccess = res.data.access;
+          setAccessToken(newAccess);
+          return newAccess;
+        })
+        .finally(() => {
+          refreshPromise = null; // reset after done
+        });
     }
-
-    // const response = await axiosInstance.post('auth/refresh-token');
-    const response = await axiosInstance.post('auth/refresh/');
-    setAccessToken(response.data.access);
-    setCSRFToken(response.headers['x-csrftoken']);
-
-    return {
-      accessToken: response.data.access,
-      csrfToken: response.headers['x-csrftoken'],
-    };
+    return refreshPromise;
   };
 
   return refresh;

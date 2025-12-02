@@ -1,33 +1,18 @@
+// Originally forked - modified with help from AI to use only cookies.
+// the dual Token/Cookies did not work and cost many hours of research
+// Sources: the DUCK, ChatGPT and COPilot.
+// Original Fork: https://github.com/sinansarikaya/django-react-auth
+
+// ===================================================================
+
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:8000/';
-
-// Public instance: for login, register, refresh
 export const axiosInstance = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,
-  headers: { 'Content-Type': 'application/json' },
+  baseURL: 'http://localhost:8000/',
+  withCredentials: true, // ensures cookies are sent
 });
 
-// Automatically append trailing slash if missing
-axiosInstance.interceptors.request.use((config) => {
-  if (!config.url.endsWith('/')) {
-    config.url += '/';
-  }
-  return config;
-});
-
-// Private instance: for authenticated requests
 export const axiosPrivateInstance = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,
-  headers: { 'Content-Type': 'application/json' },
-});
-
-// Append trailing slash
-axiosPrivateInstance.interceptors.request.use((config) => {
-  if (!config.url.endsWith('/')) {
-    config.url += '/';
-  }
-  return config;
+  baseURL: 'http://localhost:8000/',
+  withCredentials: true, // ensures cookies are sent
 });

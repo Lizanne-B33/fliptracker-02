@@ -1,30 +1,27 @@
-import { useState, useEffect, createContext } from 'react';
+// Originally forked - modified with help from AI to use only cookies.
+// the dual Token/Cookies did not work and cost many hours of research
+// Sources: the DUCK, ChatGPT and COPilot.
+// Original Fork: https://github.com/sinansarikaya/django-react-auth
+
+// ===================================================================
+
+import { createContext, useState, useContext } from 'react';
 
 export const AuthContext = createContext({
-  user: {},
+  user: null,
   setUser: () => {},
   accessToken: null,
-  refreshToken: null,
-  csrftoken: null,
   setAccessToken: () => {},
-  setRefreshToken: () => {},
-  setCSRFToken: () => {},
   isLoggedIn: false,
   setIsLoggedIn: () => {},
 });
 
-export function AuthContextProvider(props) {
-  const [user, setUser] = useState({});
-  const [accessToken, setAccessToken] = useState();
-  const [refreshToken, setRefreshToken] = useState();
-  const [csrftoken, setCSRFToken] = useState();
+export function AuthContextProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(
     JSON.parse(localStorage.getItem('isLoggedIn')) || false
   );
-
-  useEffect(() => {
-    localStorage.setItem('isLoggedIn', JSON.stringify(isLoggedIn));
-  }, [isLoggedIn]);
 
   return (
     <AuthContext.Provider
@@ -33,17 +30,16 @@ export function AuthContextProvider(props) {
         setUser,
         accessToken,
         setAccessToken,
-        refreshToken,
-        setRefreshToken,
-        csrftoken,
-        setCSRFToken,
         isLoggedIn,
         setIsLoggedIn,
       }}
     >
-      {props.children}
+      {children}
     </AuthContext.Provider>
   );
 }
+
+// Hook to use auth context
+export const useAuth = () => useContext(AuthContext);
 
 export default AuthContext;

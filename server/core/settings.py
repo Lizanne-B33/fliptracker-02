@@ -149,15 +149,19 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000"
 ]
 CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTP_ONLY = True
+
+# Modified from fork: only using cookies.
+# Source ChatGPT.
+CSRF_COOKIE_SECURE = False          # HTTP development
+SESSION_COOKIE_SECURE = False       # HTTP development
+CSRF_COOKIE_HTTP_ONLY = True        # optional, can be read by JS if False
+CSRF_COOKIE_SAMESITE = "Lax"        # safe cross-site for dev
+SESSION_COOKIE_SAMESITE = "Lax"     # safe cross-site for dev
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000"
 ]
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SAMESITE = "None"
 
 
 SIMPLE_JWT = {

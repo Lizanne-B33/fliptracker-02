@@ -1,21 +1,29 @@
+// Originally forked - modified with help from AI to use only cookies.
+// the dual Token/Cookies did not work and cost many hours of research
+// Sources: the DUCK, ChatGPT and COPilot.
+// Original Fork: https://github.com/sinansarikaya/django-react-auth
+
+// ===================================================================
+
 import { useCallback } from 'react';
 import useAuth from './useAuth';
-import useAxiosPrivate from './usePrivate';
+import usePrivate from './usePrivate';
 
 export default function useUser() {
-  const { isLoggedIn, setUser } = useAuth();
-  const axiosPrivateInstance = useAxiosPrivate();
+  const { user, setUser } = useAuth();
+  const axiosPrivate = usePrivate();
 
-  const getUser = useCallback(async () => {
-    if (!isLoggedIn) return;
-
+  const fetchUser = useCallback(async () => {
+    if (user) return user; // already have it
     try {
-      const { data } = await axiosPrivateInstance.get('auth/me');
+      const { data } = await axiosPrivate.get('auth/me/');
       setUser(data);
-    } catch (error) {
-      console.log(error.response);
+      return data;
+    } catch (err) {
+      console.error(err.response || err);
+      return null;
     }
-  }, [isLoggedIn, axiosPrivateInstance, setUser]);
+  }, [user, setUser, axiosPrivate]);
 
-  return getUser;
+  return { user, fetchUser };
 }

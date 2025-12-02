@@ -1,41 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
-import useAxiosPrivate from '../hooks/usePrivate';
+// Originally forked - modified with help from AI to use only cookies.
+// the dual Token/Cookies did not work and cost many hours of research
+// Sources: the DUCK, ChatGPT and COPilot.
+// Original Fork: https://github.com/sinansarikaya/django-react-auth
+
+// ===================================================================
+
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { axiosInstance } from '../api/apiConfig'; // simple axios, no retry
 import useRefreshToken from '../hooks/useRefreshToken';
 
-export default function PersistLogin() {
+export default function PersistLogin({ children }) {
+  const { user, setUser } = useAuth();
   const refresh = useRefreshToken();
-  const { accessToken, isLoggedIn, setUser } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const axiosPrivate = useAxiosPrivate();
+  const [loading, setLoading] = useState(!user);
 
   useEffect(() => {
-    let isMounted = true;
+    if (user) {
+      setLoading(false);
+      return;
+    }
 
-    async function verifyUser() {
-      if (!isLoggedIn) {
-        isMounted && setLoading(false);
+    const verifyUser = async () => {
+      const hasRefreshCookie = document.cookie.includes('refresh');
+      if (!hasRefreshCookie) {
+        setLoading(false); // No refresh → show login
         return;
       }
 
       try {
+        // Try to refresh the token
         await refresh();
-        const { data } = await axiosPrivate.get('auth/me');
-        setUser(data);
-      } catch (error) {
-        console.log(error?.response);
+
+        // After refresh, fetch user safely
+        const res = await axiosInstance.get('auth/me/', {
+          withCredentials: true,
+        });
+        setUser(res.data);
+      } catch (err) {
+        console.error('Cannot refresh or fetch user:', err);
+        setUser(null); // treat as guest
       } finally {
-        isMounted && setLoading(false);
+        setLoading(false);
       }
-    }
-
-    !accessToken ? verifyUser() : setLoading(false);
-
-    return () => {
-      isMounted = false;
     };
-  }, []);
 
-  return loading ? 'Loading' : <Outlet />;
+    verifyUser();
+  }, [user, setUser, refresh]);
+
+  if (loading) return <div>Loading...</div>;
+  return children;
 }
