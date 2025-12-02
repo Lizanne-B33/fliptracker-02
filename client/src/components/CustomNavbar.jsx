@@ -88,7 +88,7 @@ function CustomNavbar() {
 
                 <Nav.Link
                   as="button"
-                  onclick={logout}
+                  onClick={logout}
                   className="btn btn-link nav-link"
                 >
                   Logout
