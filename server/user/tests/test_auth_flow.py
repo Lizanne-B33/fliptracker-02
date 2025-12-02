@@ -4,15 +4,14 @@ from .factories import UserFactory
 
 
 @pytest.mark.django_db
-def test_login_sets_cookies(client):
+def test_login_returns_jwt_tokens(client):
     user = UserFactory(email="test@example.com")  # password is "testme123"
     response = client.post(
-        reverse("user:login"),
+        reverse("token_obtain_pair"),  # name from urls.py
         {"email": user.email, "password": "testme123"},
         content_type="application/json"
     )
     assert response.status_code == 200
-    data = response.json()  # pytest-django client gives you .json()
-    assert "access_token" in data
-    assert "refresh_token" in data
-    # assert "Set-Cookie" in str(response)
+    data = response.json()
+    assert "access" in data
+    assert "refresh" in data

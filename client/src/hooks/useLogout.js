@@ -10,16 +10,23 @@ import { axiosInstance } from '../api/apiConfig';
 import useAuth from './useAuth';
 
 export default function useLogout() {
-  const { setUser } = useAuth();
+  const { setUser, setAccessToken } = useAuth();
   const navigate = useNavigate();
 
   return async (redirect = true) => {
     try {
-      await axiosInstance.post('auth/logout/', {}, { withCredentials: true });
+      // Call your backend logout endpoint (optional if you don’t blacklist refresh tokens)
+      await axiosInstance.post('/api/user/logout/');
     } catch (err) {
       console.error('Logout failed:', err);
     } finally {
-      setUser(null); // clear user state
+      // Clear client-side state
+      setUser(null);
+      setAccessToken(null);
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+
       if (redirect) navigate('/auth/login');
     }
   };

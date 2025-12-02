@@ -1,4 +1,4 @@
-// Originally forked - modified with help from AI to use only cookies.
+// Originally forked - modified with help from AI to use JWT only.
 // the dual Token/Cookies did not work and cost many hours of research
 // Sources: the DUCK, ChatGPT and COPilot.
 // Original Fork: https://github.com/sinansarikaya/django-react-auth
@@ -8,10 +8,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { axiosInstance } from '../../api/apiConfig';
-import { useAuth } from '../../context/AuthContext';
+import useAuth from '../../hooks/useAuth';
 
 export default function Login() {
-  const { setAccessToken, setIsLoggedIn } = useAuth();
+  const { setAccessToken, setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const fromLocation = location?.state?.from?.pathname || '/';
@@ -26,17 +26,23 @@ export default function Login() {
     setError(null);
 
     try {
-      const response = await axiosInstance.post(
-        'auth/login/',
-        { email, password },
-        { withCredentials: true } // crucial for cookie auth
-      );
+      const response = await axiosInstance.post('/api/token/', {
+        email,
+        password,
+      });
+      const { access, refresh } = response.data;
 
-      // Save token to context
-      setAccessToken(response.data.access);
-      setIsLoggedIn(true);
-      localStorage.setItem('accessToken', response.data.access);
-      localStorage.setItem('isLoggedIn', true);
+      // Save tokens
+      setAccessToken(access);
+      localStorage.setItem('accessToken', access);
+      localStorage.setItem('refreshToken', refresh);
+
+      // Optionally fetch user immediately
+      const userRes = await axiosInstance.get('/api/user/me/', {
+        headers: { Authorization: `Bearer ${access}` },
+      });
+      setUser(userRes.data);
+      localStorage.setItem('user', JSON.stringify(userRes.data));
 
       // Reset form
       setEmail('');
@@ -45,7 +51,11 @@ export default function Login() {
       navigate(fromLocation, { replace: true });
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Login failed');
+      const detail =
+        err.response?.data?.detail ||
+        err.response?.data?.non_field_errors?.[0] ||
+        'Login failed';
+      setError(detail);
     } finally {
       setLoading(false);
     }

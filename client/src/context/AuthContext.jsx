@@ -5,7 +5,7 @@
 
 // ===================================================================
 
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 
 export const AuthContext = createContext({
   user: null,
@@ -13,15 +13,36 @@ export const AuthContext = createContext({
   accessToken: null,
   setAccessToken: () => {},
   isLoggedIn: false,
-  setIsLoggedIn: () => {},
 });
 
 export function AuthContextProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    JSON.parse(localStorage.getItem('isLoggedIn')) || false
-  );
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  const [accessToken, setAccessToken] = useState(() => {
+    return localStorage.getItem('accessToken') || null;
+  });
+
+  const isLoggedIn = !!accessToken;
+
+  // Keep localStorage in sync
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (accessToken) {
+      localStorage.setItem('accessToken', accessToken);
+    } else {
+      localStorage.removeItem('accessToken');
+    }
+  }, [accessToken]);
 
   return (
     <AuthContext.Provider
@@ -31,7 +52,6 @@ export function AuthContextProvider({ children }) {
         accessToken,
         setAccessToken,
         isLoggedIn,
-        setIsLoggedIn,
       }}
     >
       {children}

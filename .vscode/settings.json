@@ -1,3 +1,9 @@
 {
-  "cSpell.words": ["csrftoken", "thrifted", "Trackr", "Uncategorized"]
+  "cSpell.words": [
+    "csrftoken",
+    "simplejwt",
+    "thrifted",
+    "Trackr",
+    "Uncategorized"
+  ]
 }

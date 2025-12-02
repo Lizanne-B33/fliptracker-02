@@ -8,7 +8,7 @@
 // and added branding and dropdown menus.
 
 import React from 'react';
-//import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import useLogout from '../hooks/useLogout';
 import logo from '../media/logos/nav_logo.png';
@@ -23,12 +23,12 @@ function CustomNavbar() {
   const logout = useLogout();
 
   return (
-    <Navbar className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <Navbar expand="lg" bg="dark" variant="dark">
       <Container>
-        <Navbar.Brand href="#home">
+        <Navbar.Brand as={NavLink} to="/">
           <img
             src={logo}
-            alt="flipTrackr logo"
+            alt="FlipTrackr logo"
             width="50"
             height="50"
             className="d-inline-block align-top me-2 nav_logo"
@@ -37,67 +37,53 @@ function CustomNavbar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="navbar-nav me-auto mb-2 mb-lg-0">
-            <Nav.Link href="/">Home</Nav.Link>
+          <Nav className="me-auto mb-2 mb-lg-0">
+            <Nav.Link as={NavLink} to="/">
+              Home
+            </Nav.Link>
             {isLoggedIn ? (
               <>
-                <Nav.Link href="/auth/User">User Info</Nav.Link>
-                <></>
-
-                <NavDropdown title="Inventory" id="basic-nav-dropdown">
-                  <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.2">
-                    Another action
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.3">
-                    Something
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action/3.4">
-                    Separated link
-                  </NavDropdown.Item>
-                </NavDropdown>
-
-                <NavDropdown title="Insights" id="basic-nav-dropdown">
-                  <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.2">
-                    Another action
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.3">
-                    Something
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action/3.4">
-                    Separated link
-                  </NavDropdown.Item>
-                </NavDropdown>
-
-                <NavDropdown title="Admin" id="basic-nav-dropdown">
-                  <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.2">
-                    Another action
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="#action/3.3">
-                    Something
-                  </NavDropdown.Item>
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item href="#action/3.4">
-                    Separated link
-                  </NavDropdown.Item>
-                </NavDropdown>
-
-                <Nav.Link
-                  as="button"
-                  onClick={logout}
-                  className="btn btn-link nav-link"
-                >
-                  Logout
+                <Nav.Link as={NavLink} to="/auth/user">
+                  User Info
                 </Nav.Link>
+
+                <NavDropdown title="Inventory" id="inventory-nav-dropdown">
+                  <NavDropdown.Item as={NavLink} to="/inventory/list">
+                    View Inventory
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={NavLink} to="/inventory/add">
+                    Add Item
+                  </NavDropdown.Item>
+                </NavDropdown>
+
+                <NavDropdown title="Insights" id="insights-nav-dropdown">
+                  <NavDropdown.Item as={NavLink} to="/insights/reports">
+                    Reports
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={NavLink} to="/insights/trends">
+                    Trends
+                  </NavDropdown.Item>
+                </NavDropdown>
+
+                <NavDropdown title="Admin" id="admin-nav-dropdown">
+                  <NavDropdown.Item as={NavLink} to="/admin/users">
+                    Manage Users
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={NavLink} to="/admin/settings">
+                    Settings
+                  </NavDropdown.Item>
+                </NavDropdown>
+
+                <Nav.Link onClick={logout}>Logout</Nav.Link>
               </>
             ) : (
               <>
-                <Nav.Link href="/auth/login">Login</Nav.Link>
-                <Nav.Link href="/auth/register">Register</Nav.Link>
+                <Nav.Link as={NavLink} to="/auth/login">
+                  Login
+                </Nav.Link>
+                <Nav.Link as={NavLink} to="/auth/register">
+                  Register
+                </Nav.Link>
               </>
             )}
           </Nav>
@@ -106,4 +92,5 @@ function CustomNavbar() {
     </Navbar>
   );
 }
+
 export default CustomNavbar;

@@ -1,4 +1,4 @@
-// Originally forked - modified with help from AI to use only cookies.
+// Originally forked - modified with help from AI to use JWT only.
 // the dual Token/Cookies did not work and cost many hours of research
 // Sources: the DUCK, ChatGPT and COPilot.
 // Original Fork: https://github.com/sinansarikaya/django-react-auth
@@ -34,14 +34,16 @@ export default function Register() {
     };
 
     try {
-      await axiosInstance.post('auth/register/', data, {
-        withCredentials: true,
-      });
+      await axiosInstance.post('/user/register/', data);
       event.target.reset();
-      navigate('/auth/login');
+      navigate('/auth/login'); // redirect to login after success
     } catch (err) {
       console.error(err);
-      setError(err.response?.data || 'Registration failed');
+      const detail =
+        err.response?.data?.detail ||
+        err.response?.data?.non_field_errors?.[0] ||
+        'Registration failed';
+      setError(detail);
     } finally {
       setLoading(false);
     }
@@ -50,7 +52,7 @@ export default function Register() {
   return (
     <div className="container">
       <h2>Register</h2>
-      {error && <p style={{ color: 'red' }}>{JSON.stringify(error)}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={onSubmitForm}>
         <input
           type="text"

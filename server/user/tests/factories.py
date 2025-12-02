@@ -14,4 +14,8 @@ class UserFactory(factory.django.DjangoModelFactory):
         model = User
 
     email = factory.Sequence(lambda n: f"user{n}@fliptrackr.com")
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
     password = factory.LazyFunction(lambda: make_password("testme123"))
+    is_staff = False
+    is_active = True

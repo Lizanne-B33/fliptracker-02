@@ -8,7 +8,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { axiosInstance } from '../api/apiConfig'; // simple instance, no retry
+import { axiosInstance } from '../api/apiConfig';
 
 const UserProfile = () => {
   const { user, setUser } = useAuth();
@@ -23,13 +23,11 @@ const UserProfile = () => {
 
     const fetchUser = async () => {
       try {
-        const res = await axiosInstance.get('auth/me/', {
-          withCredentials: true,
-        });
+        const res = await axiosInstance.get('/api/user/me/');
         setUser(res.data);
       } catch (err) {
         console.error('Error fetching user:', err);
-        setError(err.response?.data?.detail || null);
+        setError(err.response?.data?.detail || 'Unable to fetch user');
       } finally {
         setLoading(false);
       }
@@ -44,7 +42,9 @@ const UserProfile = () => {
 
   return (
     <div>
-      <h2>Welcome, {user.username}</h2>
+      <h2>
+        Welcome, {user.first_name} {user.last_name}
+      </h2>
       <p>Email: {user.email}</p>
       <p>User ID: {user.id}</p>
     </div>

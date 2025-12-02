@@ -19,12 +19,11 @@ def test_register_new_user(client):
     )
 
     # Check response status
-    # assert response.status_code == 201
     assert response.status_code in (200, 201)
 
     # Check response body
     data = response.json()
-    assert data == "Registered!"
+    assert data.get("detail") == "Registered successfully"
 
     # Check database
     assert User.objects.filter(email=payload["email"]).exists()

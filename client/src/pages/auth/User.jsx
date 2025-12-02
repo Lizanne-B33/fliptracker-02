@@ -6,33 +6,49 @@ import useUser from '../../hooks/useUser';
 
 export default function User() {
   const { user } = useAuth();
-
   const navigate = useNavigate();
   const logout = useLogout();
   const [loading, setLoading] = useState(false);
-  const getUser = useUser();
+
+  const { fetchUser } = useUser();
 
   useEffect(() => {
-    getUser();
-  }, [getUser]);
+    fetchUser();
+  }, [fetchUser]);
 
   async function onLogout() {
     setLoading(true);
-
     await logout();
     navigate('/');
   }
 
+  if (!user) return <p>Loading user...</p>;
+
   return (
-    <div>
-      <h4>{user?.id}</h4>
-      <h4>{user?.username}</h4>
-      <h4>{user?.email}</h4>
-      <h4>{user?.first_name}</h4>
-      <h4>{user?.last_name}</h4>
-      <h4>{user?.is_staff}</h4>
-      <button disabled={loading} type="button" onClick={onLogout}>
-        Logout
+    <div className="container">
+      <h2>User Profile</h2>
+      <p>
+        <strong>ID:</strong> {user.id}
+      </p>
+      <p>
+        <strong>Email:</strong> {user.email}
+      </p>
+      <p>
+        <strong>First Name:</strong> {user.first_name}
+      </p>
+      <p>
+        <strong>Last Name:</strong> {user.last_name}
+      </p>
+      <p>
+        <strong>Staff:</strong> {user.is_staff ? 'Yes' : 'No'}
+      </p>
+      <button
+        disabled={loading}
+        type="button"
+        className="btn btn-danger mt-3"
+        onClick={onLogout}
+      >
+        {loading ? 'Logging out...' : 'Logout'}
       </button>
     </div>
   );

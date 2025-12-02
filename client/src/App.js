@@ -20,25 +20,20 @@ function App() {
       <CustomNavbar />
 
       <Routes>
-        {/* Wrap all routes with PersistLogin */}
+        {/* Public routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+
+        {/* Protected routes wrapped with PersistLogin */}
         <Route element={<PersistLogin />}>
-          {/* Public routes */}
-          <Route path="/auth">
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-          </Route>
-
-          {/* Home route */}
-          <Route path="/" element={<Home />} />
-
-          {/* Protected route */}
           <Route path="/user" element={<AuthMiddleware />}>
             <Route index element={<User />} />
           </Route>
         </Route>
 
         {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );
