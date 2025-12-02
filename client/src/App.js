@@ -5,12 +5,12 @@ import Register from './pages/auth/Register';
 import Home from './pages/Home';
 import User from './pages/auth/User';
 import PersistLogin from './components/PersistLogin';
-import Navbar from './components/Navbar';
+import CustomNavbar from './components/CustomNavbar';
 
 function App() {
   return (
     <>
-      <Navbar />
+      <CustomNavbar />
       <Routes>
         <Route path="/" element={<PersistLogin />}>
           <Route index exact element={<Home />}></Route>

@@ -1,3 +1,6 @@
+// Sources
+// Forked code from https://github.com/sinansarikaya/django-react-auth
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
@@ -5,7 +8,7 @@ import useLogout from '../hooks/useLogout';
 import logo from '../media/logos/nav_logo.png';
 import '../styles/nav.css';
 
-export default function Navbar() {
+export default function Navbar_old() {
   const { isLoggedIn } = useAuth();
   const logout = useLogout();
 
