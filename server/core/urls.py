@@ -21,5 +21,5 @@ urlpatterns = [
     # your custom user app
     path('api/user/', include('user.urls', namespace='user')),
     path('api/inventory/', include('inventory.urls',
-         namespace='inventory')),  # your inventory app
+         namespace='inventory')),
 ]

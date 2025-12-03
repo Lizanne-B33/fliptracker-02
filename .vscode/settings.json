@@ -2,9 +2,12 @@
   "cSpell.words": [
     "csrftoken",
     "Fulladd",
+    "pydecimal",
     "simplejwt",
     "thrifted",
     "Trackr",
-    "Uncategorized"
+    "Uncategorized",
+    "viewset",
+    "viewsets"
   ]
 }

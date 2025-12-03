@@ -5,14 +5,15 @@ https://www.django-rest-framework.org/tutorial/quickstart/#quickstart
 """
 from django.contrib import admin
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
-from .views import ProductFastEntryViewSet, ProductViewSet
+from rest_framework import routers
+from .views import ProductFastEntryViewSet, ProductViewSet, CategoryViewSet
 
 # router used for standard CRUD work.
-router = DefaultRouter()
-router.register(r'products/fast', ProductFastEntryViewSet,
+router = routers.DefaultRouter()
+
+router.register(r'product-fast', ProductFastEntryViewSet,
                 basename='product-fast')
-router.register(r'products/full', ProductViewSet, basename='product-full')
+router.register(r'product-full', ProductViewSet, basename='product-full')
 
 app_name = 'inventory'  # required for namespace
 

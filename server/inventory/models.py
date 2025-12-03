@@ -19,8 +19,8 @@ class ProductType(models.Model):    # High level product types (furniture, cloth
 # Categories related to InvType to group inventory items.
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    inv_type = models.ForeignKey(ProductType, on_delete=models.CASCADE,
-                                 related_name="categories", related_query_name="category")
+    product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE,
+                                     related_name="categories", related_query_name="category")
 
     class Meta:
         ordering = ["name"]
@@ -28,6 +28,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+def get_default_category():
+    return Category.objects.get(name="Uncategorized").id
 
 
 class Tag(models.Model):
@@ -43,7 +47,7 @@ class Tag(models.Model):
 
     name = models.CharField(max_length=50)
     tag_category = models.CharField(
-        max_length=50, choices=TAG_CHOICES, default='STYLE')
+        max_length=50, choices=TAG_CHOICES, default='style')
 
     def __str__(self):
         return self.name
@@ -82,12 +86,12 @@ class Product(models.Model):
         (REMOVED, 'Removed'),
     ]
 
-    NEW = "Like new"
-    RESTORED = "Restored"
-    BEST = "Used: Excellent"
-    BETTER = "Used: Very Good"
-    GOOD = "Used: Good"
-    UNDEFINED = "Undefined"
+    NEW = "like_new"
+    RESTORED = "restored"
+    BEST = "used_excellent"
+    BETTER = "used_very Good"
+    GOOD = "used_good"
+    UNDEFINED = "undefined"
     CONDITION_CHOICES = [
         (NEW, "Like new"),
         (RESTORED, "Restored"),
@@ -97,9 +101,9 @@ class Product(models.Model):
         (UNDEFINED, "Undefined")
     ]
 
-    EA = "Each"
-    PAIR = "Pair"
-    SET = "Set"
+    EA = "each"
+    PAIR = "pair"
+    SET = "set"
     UOM_CHOICES = [
         (EA, "Each"),
         (PAIR, "Pair"),
@@ -113,7 +117,7 @@ class Product(models.Model):
     prod_image = models.ImageField(upload_to='images/')
     cost = models.DecimalField(max_digits=8, decimal_places=2)
     cost_unit = models.CharField(
-        max_length=15, choices=UOM_CHOICES, default=EA)
+        max_length=15, choices=UOM_CHOICES, default='each')
     ai_desc = models.TextField(blank=True)
     fast_notes = models.TextField(blank=True)
     user_desc = models.TextField(blank=True)
@@ -121,16 +125,16 @@ class Product(models.Model):
     price = models.DecimalField(
         max_digits=6, decimal_places=2, blank=True, null=True)
     price_unit = models.CharField(
-        max_length=15, choices=UOM_CHOICES, default=EA)
+        max_length=15, choices=UOM_CHOICES, default='each')
     category = models.ForeignKey(
-        "Category", on_delete=models.PROTECT, default=0)
+        "Category", on_delete=models.PROTECT, default=get_default_category)
     brand = models.CharField(max_length=255, blank=True)
     color = models.CharField(max_length=30, blank=True)
     size = models.CharField(max_length=50, blank=True)
     condition = models.CharField(
-        max_length=20, choices=CONDITION_CHOICES, default=UNDEFINED)
+        max_length=20, choices=CONDITION_CHOICES, default='undefined')
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default=ACQUIRED)
+        max_length=20, choices=STATUS_CHOICES, default='acquired')
     tags = models.ManyToManyField(Tag, related_name="items", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

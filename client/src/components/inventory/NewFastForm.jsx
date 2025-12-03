@@ -1,6 +1,9 @@
 // Sources
 // https://paperform.co/tools/free-react-form-creator/
-// converted to react-bootstrap
+// converted to react-bootstrap -
+// https://letsreact.org/create-form-ui-using-react-bootstrap
+// https://react-bootstrap.github.io/docs/forms/input-group/
+//
 
 // Imports: useState manages state, axiosInstance is Axios Client (communicates with backend)
 import React, { useState } from 'react';
@@ -47,6 +50,7 @@ const FastCreateForm = () => {
       quantity: '1',
       quantity_units: 'each',
       image: '',
+      condition: '',
       ai_description: '',
       fast_notes: '',
       commit: 'choose...',
@@ -104,7 +108,7 @@ const FastCreateForm = () => {
         </Form.Group>
       </Row>
       <Row className="mb-3">
-        <Form.Group className=" col col-sm-6" controlId="cost">
+        <Form.Group className=" col-md-3" controlId="cost">
           <Form.Label>Cost</Form.Label>
           <Form.Control
             type="number"
@@ -117,7 +121,7 @@ const FastCreateForm = () => {
             min={0}
           />
         </Form.Group>
-        <Form.Group className=" col col-sm-6" controlId="quantity">
+        <Form.Group className=" col col-md-3" controlId="quantity">
           <Form.Label>Quantity</Form.Label>
           <Form.Control
             type="number"
@@ -129,7 +133,7 @@ const FastCreateForm = () => {
             defaultValue={1}
           />
         </Form.Group>
-        <Form.Group className=" col col-sm-6" controlId="quantity_units">
+        <Form.Group className=" col col-md-3" controlId="quantity_units">
           <Form.Label>Units</Form.Label>
           <Form.Select
             id="quantity_units"
@@ -143,6 +147,25 @@ const FastCreateForm = () => {
             <option value="each">Each</option>
             <option value="pair">Pair</option>
             <option value="set">Set</option>
+          </Form.Select>
+        </Form.Group>
+        <Form.Group className=" col col-md-3" controlId="condition">
+          <Form.Label>Units</Form.Label>
+          <Form.Select
+            id="condition"
+            defaultValue="Undefined"
+            className="form-control"
+            name="condition"
+            value={form.condition}
+            onChange={handleChange}
+            required
+          >
+            <option value="Undefined">Each</option>
+            <option value="new">Pair</option>
+            <option value="restored">Set</option>
+            <option value="best">Set</option>
+            <option value="better">Set</option>
+            <option value="good">Set</option>
           </Form.Select>
         </Form.Group>
       </Row>
