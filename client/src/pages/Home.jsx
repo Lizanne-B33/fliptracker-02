@@ -10,6 +10,9 @@ import '../styles/home.css';
 export default function Home() {
   return (
     <main className="topParent">
+      <section className="userProfile">
+        <UserProfile />
+      </section>
       <section className="hero">
         <div className="container text-center py-5">
           <div className="row welcome-hero">
@@ -18,6 +21,7 @@ export default function Home() {
             <HeroButtons />
           </div>
         </div>
+        {/* Canary: show user profile if logged in */}
       </section>
 
       <section className="functionCards">
@@ -26,11 +30,6 @@ export default function Home() {
 
       <section className="mobile_accordion">
         <FeatureAccordion />
-      </section>
-
-      {/* Canary: show user profile if logged in */}
-      <section className="userProfile">
-        <UserProfile />
       </section>
     </main>
   );
