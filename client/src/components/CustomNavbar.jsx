@@ -43,15 +43,18 @@ function CustomNavbar() {
             </Nav.Link>
             {isLoggedIn ? (
               <>
-                <Nav.Link as={NavLink} to="/auth/user">
-                  User Info
+                <Nav.Link as={NavLink} to="/mobile/FastAdd.jsx">
+                  Fast Add
                 </Nav.Link>
 
                 <NavDropdown title="Inventory" id="inventory-nav-dropdown">
                   <NavDropdown.Item as={NavLink} to="/inventory/list">
                     View Inventory
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={NavLink} to="/inventory/add">
+                  <NavDropdown.Item as={NavLink} to="/inventory/EditItem">
+                    Edit Item
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={NavLink} to="/inventory/Fulladd">
                     Add Item
                   </NavDropdown.Item>
                 </NavDropdown>
@@ -66,8 +69,8 @@ function CustomNavbar() {
                 </NavDropdown>
 
                 <NavDropdown title="Admin" id="admin-nav-dropdown">
-                  <NavDropdown.Item as={NavLink} to="/admin/users">
-                    Manage Users
+                  <NavDropdown.Item as={NavLink} to="/admin/ManageCategory">
+                    Manage Categories
                   </NavDropdown.Item>
                   <NavDropdown.Item as={NavLink} to="/admin/settings">
                     Settings
