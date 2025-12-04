@@ -7,20 +7,11 @@ export default function AuthMiddleware() {
   const location = useLocation();
 
   if (accessToken) {
-    // User is authenticated → render child routes
     return <Outlet />;
   }
 
-  // User is not authenticated → show friendly message + redirect
+  // Redirect to home with a flag
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
-      <h2 style={{ color: 'red' }}>Session Expired</h2>
-      <p>
-        You’ve been logged out due to inactivity or session timeout. Please log
-        in again to continue.
-      </p>
-      {/* Redirect to login */}
-      <Navigate to="/auth/login" state={{ from: location }} replace />
-    </div>
+    <Navigate to="/" state={{ sessionExpired: true, from: location }} replace />
   );
 }
