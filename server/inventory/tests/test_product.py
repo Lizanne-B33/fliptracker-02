@@ -6,18 +6,12 @@
 
 import pytest
 from django.urls import reverse
-from inventory.models import Product, Category, ProductType
+from inventory.models import Product
 
 
 @pytest.mark.django_db
-def test_fast_entry_viewset_create(authenticated_client, test_image):
+def test_fast_entry_viewset_create(authenticated_client, test_image, category):
     client, user = authenticated_client
-
-    product_type = ProductType.objects.get(name="Shared")
-    category, _ = Category.objects.get_or_create(
-        name="Uncategorized",
-        defaults={"product_type": product_type},
-    )
 
     data = {
         "title": "Quick Add Product",
@@ -26,9 +20,10 @@ def test_fast_entry_viewset_create(authenticated_client, test_image):
         "cost_unit": "each",
         "cost": 12.50,
         "ai_desc": "AI quick description",
+        "category": category.id,
     }
 
-    url = reverse("inventory:product-fast-list")
+    url = reverse("inventory:product_fast-list")
     response = client.post(url, data, format="multipart")
 
     print(response.status_code, response.data)  # helpful debug

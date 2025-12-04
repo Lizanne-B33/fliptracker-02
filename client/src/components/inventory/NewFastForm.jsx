@@ -1,40 +1,44 @@
-// Sources
-// https://paperform.co/tools/free-react-form-creator/
-// converted to react-bootstrap -
-// https://letsreact.org/create-form-ui-using-react-bootstrap
-// https://react-bootstrap.github.io/docs/forms/input-group/
-//
+// FastCreateForm.jsx
+// Refactored to use React-Bootstrap consistently
 
-// Imports: useState manages state, axiosInstance is Axios Client (communicates with backend)
 import React, { useState } from 'react';
 import { axiosInstance } from '../../api/apiConfig';
+import { Row, Col, Form, Button } from 'react-bootstrap';
 
-const FastCreateForm = () => {
+console.log('NewFastForm mounted');
+
+const NewFastForm = () => {
   // STATE MANAGEMENT
-  const [formData, setFormData] = useState({}); // holds all field values
-  const [loading, setLoading] = useState(false); // shows when a request is in progress
-  const [error, setError] = useState(null); // Stores error messages
-  const [success, setSuccess] = useState(false); // Tracks successful submission
-  const [selectedOption, setSelectedOption] = useState('');
-  const [committed, setCommitted] = useState('');
+  const [formData, setFormData] = useState({
+    title: '',
+    cost: '',
+    quantity: 1,
+    quantity_units: 'each',
+    image: '',
+    condition: 'Undefined',
+    ai_description: '',
+    fast_notes: '',
+    commit: 'choose...',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [committed, setCommitted] = useState(false);
 
-  // CHANGE HANDLER: Updates formData when a field changes.
-  // Handles text, numbers, checkboxes, and file uploads.
+  // CHANGE HANDLER
   const handleChange = (e) => {
-    let field_id = e.id;
-    if (field_id === 'commit') {
-      if (e.selectedOption === 'confirm') {
-        setCommitted(true);
-      }
-      if (e.selectedOption === 'reset') {
-        resetButton();
-      }
-      if (e.selectedOption === 'choose...') {
+    const { id, name, value, type, checked, files } = e.target;
+
+    // Special commit logic
+    if (id === 'commit') {
+      if (value === 'confirm') setCommitted(true);
+      if (value === 'reset') {
+        resetForm();
         setCommitted(false);
       }
+      if (value === 'choose...') setCommitted(false);
     }
 
-    const { name, value, type, checked, files } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === 'checkbox' ? checked : files ? files[0] : value,
@@ -42,23 +46,21 @@ const FastCreateForm = () => {
   };
 
   // FORM CLEARING
-  // Clears the values of the form
   const resetForm = () => {
     setFormData({
       title: '',
       cost: '',
-      quantity: '1',
+      quantity: 1,
       quantity_units: 'each',
       image: '',
-      condition: '',
+      condition: 'Undefined',
       ai_description: '',
       fast_notes: '',
       commit: 'choose...',
     });
   };
+
   // SUBMIT HANDLER
-  // Prevents default form submission, builds the FormData for uploads,
-  // posts to endpoint and handles success/error messages.
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -86,19 +88,16 @@ const FastCreateForm = () => {
     }
   };
 
-  // FORM JSX: Renders the fields, shows feedback messages
-  // and disables submit button while loading
-  // https://paperform.co/tools/free-react-form-creator/
+  // FORM JSX
   return (
-    <form className="container mt-3 mb-3" onSubmit={handleSubmit}>
+    <Form className="container mt-3 mb-3" onSubmit={handleSubmit}>
       <Row className="mb-3">
-        <Form.Group controlId="formFastAdd" className="col col-sm-6">
+        <Form.Group as={Col} sm={6} controlId="title">
           <Form.Label>Title</Form.Label>
           <Form.Control
             type="text"
-            id="title"
             name="title"
-            value={form.title}
+            value={formData.title}
             onChange={handleChange}
             placeholder="Product Title"
             required
@@ -107,40 +106,38 @@ const FastCreateForm = () => {
           />
         </Form.Group>
       </Row>
+
       <Row className="mb-3">
-        <Form.Group className=" col-md-3" controlId="cost">
+        <Form.Group as={Col} md={3} controlId="cost">
           <Form.Label>Cost</Form.Label>
           <Form.Control
             type="number"
-            id="cost"
             name="cost"
-            value={form.cost}
+            value={formData.cost}
             onChange={handleChange}
             placeholder="Purchase Price"
             required
             min={0}
           />
         </Form.Group>
-        <Form.Group className=" col col-md-3" controlId="quantity">
+
+        <Form.Group as={Col} md={3} controlId="quantity">
           <Form.Label>Quantity</Form.Label>
           <Form.Control
             type="number"
-            id="quantity"
             name="quantity"
+            value={formData.quantity}
             onChange={handleChange}
             required
             min={1}
-            defaultValue={1}
           />
         </Form.Group>
-        <Form.Group className=" col col-md-3" controlId="quantity_units">
+
+        <Form.Group as={Col} md={3} controlId="quantity_units">
           <Form.Label>Units</Form.Label>
           <Form.Select
-            id="quantity_units"
-            defaultValue="each"
-            className="form-control"
             name="quantity_units"
-            value={form.quantity_units}
+            value={formData.quantity_units}
             onChange={handleChange}
             required
           >
@@ -149,64 +146,65 @@ const FastCreateForm = () => {
             <option value="set">Set</option>
           </Form.Select>
         </Form.Group>
-        <Form.Group className=" col col-md-3" controlId="condition">
-          <Form.Label>Units</Form.Label>
+
+        <Form.Group as={Col} md={3} controlId="condition">
+          <Form.Label>Condition</Form.Label>
           <Form.Select
-            id="condition"
-            defaultValue="Undefined"
-            className="form-control"
             name="condition"
-            value={form.condition}
+            value={formData.condition}
             onChange={handleChange}
             required
           >
-            <option value="Undefined">Each</option>
-            <option value="new">Pair</option>
-            <option value="restored">Set</option>
-            <option value="best">Set</option>
-            <option value="better">Set</option>
-            <option value="good">Set</option>
+            <option value="Undefined">Undefined</option>
+            <option value="new">New</option>
+            <option value="restored">Restored</option>
+            <option value="best">Best</option>
+            <option value="better">Better</option>
+            <option value="good">Good</option>
           </Form.Select>
         </Form.Group>
       </Row>
+
       <Row className="mb-3">
-        <Form.Group className=" col col-md-6" controlId="image">
+        <Form.Group as={Col} md={6} controlId="image">
           <Form.Label>Product Image</Form.Label>
           <Form.Control
             type="file"
-            id="image"
             name="image"
             onChange={handleChange}
             required
           />
         </Form.Group>
-        <Form.Group className=" col col-md-6" controlId="image">
+
+        <Form.Group as={Col} md={6} controlId="ai_description">
           <Form.Label>AI Description (Optional)</Form.Label>
           <Form.Control
-            type="textarea"
-            id="ai_description"
+            as="textarea"
             name="ai_description"
+            value={formData.ai_description}
             onChange={handleChange}
             placeholder="AI Description"
           />
         </Form.Group>
       </Row>
+
       <Row className="mb-3">
-        <Form.Group className=" col col-md-8" controlId="fast_notes">
+        <Form.Group as={Col} md={8} controlId="fast_notes">
           <Form.Label>Fast Notes (Optional)</Form.Label>
           <Form.Control
-            type="textarea"
-            id="fast_notes"
+            as="textarea"
             name="fast_notes"
+            value={formData.fast_notes}
             onChange={handleChange}
             placeholder="Any additional information you want to remember?"
           />
         </Form.Group>
-        <Form.Group className=" col col-md-8" controlId="commit">
-          <Form.Label>Commit Item? </Form.Label>
+
+        <Form.Group as={Col} md={8} controlId="commit">
+          <Form.Label>Commit Item?</Form.Label>
           <Form.Select
-            id="commit"
             name="commit"
+            value={formData.commit}
             onChange={handleChange}
             required
           >
@@ -220,14 +218,15 @@ const FastCreateForm = () => {
           </Form.Select>
         </Form.Group>
       </Row>
-      <button id="save_btn" type="submit" disabled={committed}>
+
+      <Button id="save_btn" type="submit" disabled={committed}>
         {loading ? 'Saving...' : 'Submit'}
-      </button>
+      </Button>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {success && <p style={{ color: 'green' }}>Product saved successfully!</p>}
-    </form>
+    </Form>
   );
 };
 
-export default FastCreateForm;
+export default NewFastForm;

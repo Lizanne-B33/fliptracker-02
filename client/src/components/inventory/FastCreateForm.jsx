@@ -37,7 +37,7 @@ const FastCreateForm = () => {
         payload.append(key, value);
       });
 
-      const response = await axiosInstance.post('/products/fast/', payload, {
+      const response = await axiosInstance.post('/product_fast/', payload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -72,11 +72,11 @@ const FastCreateForm = () => {
       </div>
 
       <div>
-        <label htmlFor="quantity">Quantity*</label>
+        <label htmlFor="qty">Quantity*</label>
         <input
           type="number"
-          id="quantity"
-          name="quantity"
+          id="qty"
+          name="qty"
           onChange={handleChange}
           placeholder="Qty Purchased"
           required
@@ -85,10 +85,10 @@ const FastCreateForm = () => {
       </div>
 
       <div>
-        <label htmlFor="quantity_units">Quantity Units*</label>
+        <label htmlFor="qty_units">Quantity Units*</label>
         <select
-          id="quantity_units"
-          name="quantity_units"
+          id="qty_units"
+          name="qty_units"
           onChange={handleChange}
           required
         >

@@ -31,23 +31,23 @@ axiosInstance.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          const res = await axios.post(
-            'http://localhost:8000/api/token/refresh/',
-            { refresh: refreshToken }
-          );
-
-          // Save new access token
+          const res = await axios.post('/api/token/refresh/', {
+            refresh: refreshToken,
+          });
           localStorage.setItem('accessToken', res.data.access);
-
-          // Update header and retry original request
-          axiosInstance.defaults.headers.Authorization = `Bearer ${res.data.access}`;
+          originalRequest.headers.Authorization = `Bearer ${res.data.access}`;
           return axiosInstance(originalRequest);
         } catch (refreshError) {
-          // Refresh failed → force logout
+          alert(
+            'You’ve been logged out due to inactivity. Please log in again.'
+          );
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           window.location.href = '/login';
         }
+      } else {
+        alert('Your session has expired. Please log in again.');
+        window.location.href = '/login';
       }
     }
 

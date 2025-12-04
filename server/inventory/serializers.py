@@ -6,7 +6,7 @@ https://www.django-rest-framework.org/api-guide/fields/
 """
 
 from rest_framework import serializers
-from .models import Product, Tag, Category
+from .models import Product, Tag, Category, ProductType
 from user.models import User  # Importing from another app
 
 # Serializer for the Full product
@@ -38,4 +38,10 @@ class TagSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
+        fields = '__all__'
+
+
+class ProductTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductType
         fields = '__all__'
