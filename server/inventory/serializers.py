@@ -5,6 +5,7 @@ https://www.django-rest-framework.org/api-guide/fields/
 
 """
 
+from .models import ProductType
 from rest_framework import serializers
 from .models import Product, Tag, Category, ProductType
 from user.models import User  # Importing from another app
@@ -41,7 +42,41 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+def validate(self, data):
+    name = data.get('name')
+    product_type = data.get('product_type')
+
+    # Error Handling:
+    # Avoids issues when updating existing records.
+    qs = Category.objects.filter(name=name, product_type=product_type)
+    if self.instance:
+        qs = qs.exclude(pk=self.instance.pk)
+
+    # if duplicate category/productType then that is an error.
+    if qs.exists():
+        raise serializers.ValidationError(
+            {"non_field_errors": [
+                "This category/product type pair already exists."]}
+        )
+    return data
+
+
 class ProductTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductType
         fields = '__all__'
+
+    def validate(self, data):
+        name = data.get('name')
+
+        # Exclude current instance when updating
+        qs = ProductType.objects.filter(name=name)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            # Attach error to the specific field
+            raise serializers.ValidationError({
+                "name": ["This Product Type already exists."]
+            })
+        return data

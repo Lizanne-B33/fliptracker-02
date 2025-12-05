@@ -69,7 +69,7 @@ function CustomNavbar() {
                 </NavDropdown>
 
                 <NavDropdown title="Admin" id="admin-nav-dropdown">
-                  <NavDropdown.Item as={NavLink} to="/admin/ManageCategory">
+                  <NavDropdown.Item as={NavLink} to="/inventory/category">
                     Manage Categories
                   </NavDropdown.Item>
                   <NavDropdown.Item as={NavLink} to="/inventory/product-type">

@@ -2,6 +2,7 @@
 Sources:
 https://docs.djangoproject.com/en/5.2/ref/models/fields/
 https://www.django-rest-framework.org/api-guide/generic-views/#get_querysetself
+https://www.geeksforgeeks.org/python/uniquetrue-django-built-in-field-validation/
 
 """
 
@@ -10,7 +11,7 @@ from django.urls import reverse
 
 
 class ProductType(models.Model):    # High level product types (furniture, clothing, decor)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
@@ -25,6 +26,9 @@ class Category(models.Model):
     class Meta:
         ordering = ["name"]
         verbose_name_plural = "categories"
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'product_type'], name='unique_category_product_type')]
 
     def __str__(self):
         return self.name

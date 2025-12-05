@@ -7,6 +7,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import FastAdd from './pages/inventory/FastAdd';
 import ProductTypePage from './pages/inventory/ProductTypePage';
+import CategoryPage from './pages/inventory/CategoryPage';
 
 // TODO: import InventoryList from './pages/inventory/InventoryList';
 import User from './pages/auth/User';
@@ -37,6 +38,7 @@ function App() {
             <Route path="/inventory" element={<Outlet />}>
               <Route path="fast-add" element={<FastAdd />} />
               <Route path="product-type" element={<ProductTypePage />} />
+              <Route path="category" element={<CategoryPage />} />
               {/* TODO: <Route path="list" element={<InventoryList />} /> */}
             </Route>
           </Route>
