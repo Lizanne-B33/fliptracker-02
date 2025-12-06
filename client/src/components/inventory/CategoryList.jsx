@@ -13,7 +13,7 @@ function CategoryList({ items = [], onSelect }) {
       {Object.entries(grouped).map(([ptName, cats]) => (
         <div className="col-3" key={ptName}>
           {/* Product Type heading */}
-          <h5 className="text-start">{ptName}</h5>
+          <h5 className="text-start ft-listHeadings">{ptName}</h5>
 
           {/* Categories stacked vertically in this column */}
           {cats.map((c) => (

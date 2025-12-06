@@ -6,7 +6,7 @@ import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import FeatureData from '../../lists/FeatureData';
-import '../../styles/accordion.css';
+import '../../styles/home.css';
 
 function FeatureAccordion() {
   // Set the default active key

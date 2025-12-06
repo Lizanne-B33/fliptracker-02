@@ -23,14 +23,25 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
 
 
 class ProductFastEntrySerializer(serializers.ModelSerializer):
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        source='category',
+        write_only=True
+    )
+    category = CategorySerializer(read_only=True)
+
     class Meta:
         model = Product
-        fields = 'title', 'qty', 'prod_image', 'cost', 'cost_unit', 'ai_desc', 'condition', 'fast_notes'
+        fields = (
+            'title', 'qty', 'prod_image', 'cost', 'cost_unit',
+            'ai_desc', 'condition', 'fast_notes',
+            'category', 'category_id'
+        )
         read_only_fields = ['owner', 'created_at', 'updated_at']
 
 
-# Admin functionality - No longer in scope for MVP
 class TagSerializer(serializers.ModelSerializer):
+    # Admin functionality - No longer in scope for MVP
     class Meta:
         model = Tag
         fields = '__all__'

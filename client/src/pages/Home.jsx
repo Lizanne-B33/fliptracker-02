@@ -7,6 +7,7 @@ import FeatureAccordion from '../components/home/FeatureAccordion';
 import UserProfile from '../components/UserProfile';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../styles/home.css';
+import '../styles/global.css';
 
 export default function Home() {
   const location = useLocation();

@@ -100,8 +100,8 @@ const NewFastForm = () => {
             onChange={handleChange}
             placeholder="Product Title"
             required
-            minLength={20}
-            maxLength={200}
+            minLength={5}
+            maxLength={255}
           />
         </Form.Group>
       </Row>

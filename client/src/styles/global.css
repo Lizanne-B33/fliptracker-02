@@ -1,0 +1,73 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+Content sectioning
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+h1 {
+  color: #34251d; /* H1 color */
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 400; /* Medium */
+  font-size: 48px;
+  letter-spacing: -1px; /* Subtle refinement */
+  /*text-transform: uppercase; /* Optional for strong headings */
+}
+
+/* H2: Elegant and Timeless */
+h2 {
+  color: #885933; /* H2–H6 color */
+  font-family: 'Playfair Display', serif;
+  font-weight: 700; /* Bold */
+  font-size: 36px;
+  font-style: italic; /* Adds artisanal flair */
+  letter-spacing: 0.5px;
+}
+
+/* H3: Artisan Subheadings */
+h3 {
+  color: #885933;
+  font-family: 'Lora', serif;
+  font-weight: 600; /* Semi-bold */
+  font-size: 30px;
+  font-style: normal; /* For balance */
+}
+
+/* H4, H5, H6: Delicate Balance */
+h4,
+h5,
+h6 {
+  color: #885933;
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 300; /* Light */
+  font-style: italic; /* Optional */
+  letter-spacing: 0.5px;
+}
+
+h4 {
+  font-size: 24px;
+}
+h5 {
+  font-size: 20px;
+  text-decoration: underline;
+  font-weight: 600;
+}
+h6 {
+  font-size: 18px;
+}
+
+/* Body Text: Clean and Readable */
+body,
+p {
+  color: #34251d; /* Main text color */
+  font-family: 'Lora', serif;
+  font-weight: 400; /* Regular */
+  font-size: 16px;
+  line-height: 1.7; /* Spacious and legible */
+  background-color: #fbf7f0; /* Primary background */
+}
+
+/* Blockquote Styling */
+blockquote {
+  font-family: 'Playfair Display', serif;
+  color: #d9a052; /* Blockquote text color */
+  border-left: 4px solid #938298; /* Accent border */
+  padding-left: 10px;
+  margin: 1em 0; /* Adds spacing around blockquotes */
+}

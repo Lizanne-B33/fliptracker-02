@@ -28,6 +28,8 @@ const CategoryPage = () => {
     <div className="topParent">
       <section className="hero">
         <div className="container text-center py-5">
+          <h1 className="ft-bigtext mb-5">Category Management</h1>
+          <hr />
           <div className="row welcome-hero">
             <CategoryForm // Form stuff
               category={selected} // Category being edited
@@ -35,6 +37,7 @@ const CategoryPage = () => {
               onSaved={handleRefresh} // Refresh after save.
             />
           </div>
+          <hr />
           <div className="row lists">
             <CategoryList // List Stuff
               items={categories} // List of categories

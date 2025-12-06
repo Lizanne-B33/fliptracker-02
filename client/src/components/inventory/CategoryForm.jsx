@@ -8,6 +8,7 @@ import SelectField from '../../components/formFields/SelectField.jsx';
 import { getFieldError } from '../../utils/errorHelpers';
 
 const CategoryForm = ({ category, productTypes = [], onSaved }) => {
+  // STATE MANAGEMENT
   const {
     formData,
     setFormData,
@@ -72,19 +73,8 @@ const CategoryForm = ({ category, productTypes = [], onSaved }) => {
   return (
     <Form className="container mt-3 mb-3" onSubmit={handleSubmit}>
       <Row className="mb-3">
-        <TextField
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Category Name"
-          required
-          maxLength={100}
-          error={getFieldError(error, 'name')}
-        />
-
         <SelectField
-          label="Product Type"
+          label="Product/Category"
           name="product_type_id"
           value={formData.product_type_id}
           onChange={handleChange}
@@ -98,6 +88,16 @@ const CategoryForm = ({ category, productTypes = [], onSaved }) => {
           }
           placeholder="Select a Product Type"
           required
+        />
+        <TextField
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Category Name"
+          required
+          maxLength={100}
+          error={getFieldError(error, 'name')}
         />
       </Row>
       <Button type="submit" disabled={loading}>

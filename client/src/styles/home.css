@@ -5,6 +5,9 @@
 .functionCards {
   background-color: #e4ded5;
 }
+.accordion-body {
+  max-height: max-content !important;
+}
 
 @media (max-width: 1000px) {
   .functionCards {

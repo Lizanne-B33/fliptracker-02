@@ -29,6 +29,8 @@ const ProductTypePage = () => {
     <div className="topParent">
       <section className="hero">
         <div className="container text-center py-5">
+          <h1 className="ft-bigtext mb-5">Product Type Management</h1>
+          <hr />
           <div className="row welcome-hero">
             {/* Passing a Parm selected (if create or update) and a list refresh. */}
             <ProductTypeForm productType={selected} onSaved={handleRefresh} />
@@ -37,7 +39,7 @@ const ProductTypePage = () => {
           <div className="row lists mt-5">
             {/* List of product types */}
             <ProductTypeList
-              items={productTypes} // ✅ matches the prop name
+              items={productTypes} //must match the prop name
               onSelect={setSelected}
             />
           </div>
