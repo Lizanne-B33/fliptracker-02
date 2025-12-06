@@ -33,10 +33,11 @@ const ProductTypePage = () => {
             {/* Passing a Parm selected (if create or update) and a list refresh. */}
             <ProductTypeForm productType={selected} onSaved={handleRefresh} />
           </div>
-          <div className="row lists">
+          <hr />
+          <div className="row lists mt-5">
             {/* List of product types */}
             <ProductTypeList
-              ProductType={productTypes}
+              items={productTypes} // ✅ matches the prop name
               onSelect={setSelected}
             />
           </div>

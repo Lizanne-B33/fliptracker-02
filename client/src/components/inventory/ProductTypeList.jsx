@@ -1,14 +1,13 @@
 // Product Type List
-function ProductTypeList({ ProductType = [], onSelect }) {
+function ProductTypeList({ items = [], onSelect }) {
   return (
-    <ul>
-      {Array.isArray(ProductType) &&
-        ProductType.map((pt) => (
-          <li key={pt.id} onClick={() => onSelect(pt)}>
-            {pt.name}
-          </li>
-        ))}
-    </ul>
+    <div className="row ft-listItems">
+      {items.map((pt) => (
+        <div className="col-3 text-start" key={pt.id}>
+          <h6 onClick={() => onSelect(pt)}>{pt.name}</h6>
+        </div>
+      ))}
+    </div>
   );
 }
 export default ProductTypeList;

@@ -1,21 +1,13 @@
-// CategoryForm.jsx
-
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
+import { axiosInstance } from '../../api/apiConfig';
 import { submitFormData } from '../../utils/formSubmit.js';
 import { useFormState } from '../../hooks/useFormState';
-import TextField from '../formFields/TextField';
-import SelectField from '../formFields/SelectField.jsx';
+import TextField from '../../components/formFields/TextField';
+import SelectField from '../../components/formFields/SelectField.jsx';
 import { getFieldError } from '../../utils/errorHelpers';
 
-// const CategoryForm = () => {
-//TESTING -- Remove after successful
-//return <h2>Form is rendering!</h2>;
-
-// constructing with an empty array of Product Types bc they don't
-// yet exist and will crash the system.
-const CategoryForm = ({ productTypes = [] }) => {
-  //STATE MANAGEMENT
+const CategoryForm = ({ category, productTypes = [], onSaved }) => {
   const {
     formData,
     setFormData,
@@ -26,33 +18,57 @@ const CategoryForm = ({ productTypes = [] }) => {
     setLoading,
     setError,
     setSuccess,
-  } = useFormState({ name: '', product_type: '' });
+  } = useFormState({ name: '', product_type_id: '' });
 
-  // CHANGE HANDLER
+  // Prefill when editing
+  useEffect(() => {
+    if (category) {
+      setFormData({
+        id: category.id,
+        name: category.name,
+        product_type_id: category.product_type.id, // ✅ nested serializer gives object
+      });
+    } else {
+      resetForm();
+    }
+  }, [category]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    console.log(formData); // Debug: confirm updates
   };
 
-  // SUBMIT HANDLER
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const normalizedName =
       formData.name.trim().charAt(0).toUpperCase() +
       formData.name.trim().slice(1).toLowerCase();
     const payload = { ...formData, name: normalizedName };
-    submitFormData(
-      '/api/inventory/category/',
-      payload,
-      resetForm,
-      setLoading,
-      setError,
-      setSuccess
-    );
+
+    try {
+      if (category) {
+        // Edit mode
+        await axiosInstance.put(
+          `/api/inventory/category/${category.id}/`,
+          payload
+        );
+      } else {
+        // Create mode
+        await submitFormData(
+          '/api/inventory/category/',
+          payload,
+          resetForm,
+          setLoading,
+          setError,
+          setSuccess
+        );
+      }
+      if (onSaved) onSaved(); // ✅ refresh parent list
+    } catch (err) {
+      setError(err);
+    }
   };
 
-  // FORM JSX
   return (
     <Form className="container mt-3 mb-3" onSubmit={handleSubmit}>
       <Row className="mb-3">
@@ -64,29 +80,29 @@ const CategoryForm = ({ productTypes = [] }) => {
           placeholder="Category Name"
           required
           maxLength={100}
+          error={getFieldError(error, 'name')}
         />
 
         <SelectField
           label="Product Type"
-          name="product_type"
-          value={formData.product_type}
+          name="product_type_id"
+          value={formData.product_type_id}
           onChange={handleChange}
           options={productTypes.map((pt) => ({
             value: pt.id,
-            label: pt.name, // ✅ only value + label here
+            label: pt.name,
           }))}
           error={
-            getFieldError(error, 'product_type') ||
+            getFieldError(error, 'product_type_id') ||
             (error?.non_field_errors?.[0] ?? null)
-          } //
+          }
           placeholder="Select a Product Type"
           required
         />
       </Row>
       <Button type="submit" disabled={loading}>
-        {loading ? 'Saving...' : 'Submit'}
+        {loading ? 'Saving...' : category ? 'Update' : 'Create'}
       </Button>
-
       {success && (
         <p style={{ color: 'green' }}>Category saved successfully!</p>
       )}

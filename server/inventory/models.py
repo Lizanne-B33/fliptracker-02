@@ -24,7 +24,7 @@ class Category(models.Model):
                                      related_name="categories", related_query_name="category")
 
     class Meta:
-        ordering = ["name"]
+        ordering = ['product_type_id', 'name']
         verbose_name_plural = "categories"
         constraints = [
             models.UniqueConstraint(
