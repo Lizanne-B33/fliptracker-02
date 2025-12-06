@@ -6,8 +6,10 @@ import { submitFormData } from '../../utils/formSubmit.js';
 import { useFormState } from '../../hooks/useFormState';
 import TextField from '../formFields/TextField';
 import { getFieldError } from '../../utils/errorHelpers';
+import { useEffect } from 'react';
+import { axiosInstance } from '../../api/apiConfig';
 
-const ProductTypeForm = () => {
+const ProductTypeForm = ({ productType, onSaved }) => {
   // TESTING -- Remove after successful
   //return <h2>Form is rendering!</h2>;
 
@@ -25,6 +27,15 @@ const ProductTypeForm = () => {
     setSuccess,
   } = useFormState({ name: '' });
 
+  // Prefill when editing
+  useEffect(() => {
+    if (productType) {
+      setFormData(productType);
+    } else {
+      resetForm();
+    }
+  }, [productType]); // only rerun when productType changes
+
   // CHANGE HANDLER
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,20 +47,42 @@ const ProductTypeForm = () => {
   };
 
   // SUBMIT HANDLER
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // normalize name string
     const normalizedName =
       formData.name.trim().charAt(0).toUpperCase() +
       formData.name.trim().slice(1).toLowerCase();
     const payload = { ...formData, name: normalizedName };
-    submitFormData(
-      '/api/inventory/product_type/', // endpoint
-      payload, // your state object
-      resetForm, // clears the form
-      setLoading, // updates loading state
-      setError, // updates error state
-      setSuccess // updates success state
-    );
+
+    // SUBMIT TOGGLE EDIT VS NEW
+    // Edit
+    try {
+      if (productType) {
+        // EDIT mode
+        const res = await axiosInstance.put(
+          `/api/inventory/product_type/${productType.id}/`,
+          payload
+        );
+        console.log('Updated:', res.data);
+        if (onSaved) onSaved(); // refresh list after update
+      } else {
+        // Create mode
+        await submitFormData(
+          '/api/inventory/product_type/', // endpoint
+          payload, // your state object
+          resetForm, // clears the form
+          setLoading, // updates loading state
+          setError, // updates error state
+          setSuccess // updates success state
+        );
+        if (onSaved) onSaved(); // ✅ refresh list here
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err);
+    }
   };
 
   // FORM JSX
@@ -68,10 +101,10 @@ const ProductTypeForm = () => {
         />
       </Row>
       <Button id="save_btn" type="submit" disabled={committed}>
-        {loading ? 'Saving...' : 'Submit'}
+        {loading ? 'Saving...' : productType ? 'Update' : 'Create'}
       </Button>
 
-      {/* ✅ Success message */}
+      {/* Success message */}
       {success && <p style={{ color: 'green' }}>Product saved successfully!</p>}
     </Form>
   );
