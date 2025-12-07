@@ -20,7 +20,7 @@ def test_fast_entry_viewset_create(authenticated_client, test_image, category):
         "cost_unit": "each",
         "cost": 12.50,
         "ai_desc": "AI quick description",
-        "category": category.id,
+        "category_id": category.id,
     }
 
     url = reverse("inventory:product_fast-list")

@@ -13,40 +13,6 @@ from user.models import User  # Importing from another app
 # Serializer for the Full product
 
 
-class ProductCreateUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = '__all__'
-        read_only_fields = ['owner', 'created_at', 'updated_at']
-
-# Intended for create only - generally from mobile.
-
-
-class ProductFastEntrySerializer(serializers.ModelSerializer):
-    category_id = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all(),
-        source='category',
-        write_only=True
-    )
-    category = CategorySerializer(read_only=True)
-
-    class Meta:
-        model = Product
-        fields = (
-            'title', 'qty', 'prod_image', 'cost', 'cost_unit',
-            'ai_desc', 'condition', 'fast_notes',
-            'category', 'category_id'
-        )
-        read_only_fields = ['owner', 'created_at', 'updated_at']
-
-
-class TagSerializer(serializers.ModelSerializer):
-    # Admin functionality - No longer in scope for MVP
-    class Meta:
-        model = Tag
-        fields = '__all__'
-
-
 class ProductTypeSerializer(serializers.ModelSerializer):
     # Normal Model serializer automatically generates fields on the model
     # Includes all fields.
@@ -102,4 +68,63 @@ class CategorySerializer(serializers.ModelSerializer):
                 {"non_field_errors": [
                     "This category/product type pair already exists."]}
             )
+        return data
+
+
+class ProductCreateUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        read_only_fields = ['owner', 'created_at', 'updated_at']
+
+# Intended for create only - generally from mobile
+
+
+class ProductFastEntrySerializer(serializers.ModelSerializer):
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        source='category',
+        write_only=True
+    )
+    category = CategorySerializer(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = (
+            'title', 'qty', 'prod_image', 'cost', 'cost_unit',
+            'ai_desc', 'condition', 'fast_notes',
+            'category', 'category_id'
+        )
+        read_only_fields = ['owner', 'created_at', 'updated_at']
+
+
+class TagSerializer(serializers.ModelSerializer):
+    # Admin functionality - No longer in scope for MVP
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
+class ProductTypeSerializer(serializers.ModelSerializer):
+    # Normal Model serializer automatically generates fields on the model
+    # Includes all fields.
+    class Meta:
+        model = ProductType
+        fields = '__all__'
+
+    # Custom Validation - avoids duplicates in data entry,
+    # And a friendly error if someone does try.
+    def validate(self, data):
+        name = data.get('name')
+
+        # Exclude current instance when updating
+        qs = ProductType.objects.filter(name=name)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            # Attach error to the specific field
+            raise serializers.ValidationError({
+                "name": ["This Product Type already exists."]
+            })
         return data
