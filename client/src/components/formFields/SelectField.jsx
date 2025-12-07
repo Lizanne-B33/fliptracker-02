@@ -10,11 +10,12 @@ const SelectField = ({
   label,
   name,
   value,
-  options,
+  options = [], // default to empty array if there are children.
   onChange,
   optionLabelKey = 'label',
   optionValueKey = 'value',
-  error, // 👈 accept error prop
+  error, //
+  children, // allows children for static CHOICES
   ...props
 }) => (
   <Form.Group className="mb-3" controlId={name}>
@@ -23,7 +24,7 @@ const SelectField = ({
       name={name}
       value={value}
       onChange={onChange}
-      isInvalid={!!error} // 👈 mark invalid if error exists
+      isInvalid={!!error}
       {...props}
     >
       <option value="">Select {label}</option>
@@ -32,6 +33,7 @@ const SelectField = ({
           {opt[optionLabelKey]}
         </option>
       ))}
+      {children}
     </Form.Select>
     {error && (
       <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>

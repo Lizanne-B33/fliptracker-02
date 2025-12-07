@@ -6,17 +6,29 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
 
-const RangeField = ({ label, name, min, max, step, ...props }) => (
+const TextAreaField = ({
+  type = 'textarea',
+  name,
+  value,
+  onChange,
+  placeholder,
+  error, //accept error prop
+  ...props
+}) => (
   <Form.Group className="mb-3" controlId={name}>
-    <Form.Label>{label}</Form.Label>
-    <Form.Range
+    <Form.Control
+      type={type}
       name={name}
-      min={min}
-      max={max}
-      step={step}
+      value={value}
       onChange={onChange}
+      placeholder={placeholder}
+      isInvalid={!!error} // mark invalid if error exists
       {...props}
     />
+    {error && (
+      <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
+    )}
   </Form.Group>
 );
-export default SwitchField;
+
+export default TextAreaField;

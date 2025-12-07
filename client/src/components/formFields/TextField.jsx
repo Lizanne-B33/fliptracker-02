@@ -22,7 +22,7 @@ const TextField = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      isInvalid={!!error} // 👈 mark invalid if error exists
+      isInvalid={!!error} // mark invalid if error exists
       {...props}
     />
     {error && (

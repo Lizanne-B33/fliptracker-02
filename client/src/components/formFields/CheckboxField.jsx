@@ -3,6 +3,9 @@
 // https://dev.to/jsha/cheat-sheet-for-react-bootstrap-layout-and-forms-5d75
 // Idea to containerize components from Copilot.
 
+import React from 'react';
+import { Form } from 'react-bootstrap';
+
 const CheckboxField = ({ label, id, name, onChange, ...props }) => (
   <Form.Check
     type="checkbox"

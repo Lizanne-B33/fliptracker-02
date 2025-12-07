@@ -1,73 +1,199 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-Content sectioning
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-h1 {
-  color: #34251d; /* H1 color */
-  font-family: 'Josefin Sans', sans-serif;
-  font-weight: 400; /* Medium */
-  font-size: 48px;
-  letter-spacing: -1px; /* Subtle refinement */
-  /*text-transform: uppercase; /* Optional for strong headings */
+/* Global CSS Base provided by ChatGPT.
+
+/* ===============================
+   GLOBAL BRAND VARIABLES
+   =============================== */
+:root {
+  /* Backgrounds */
+  --bg-main-1: #f5f1ea;
+  --bg-main-2: #fbf7f0;
+  --bg-alt: #faf6ef;
+
+  /* Text */
+  --text-primary: #1b2024;
+  --text-secondary-1: #61655e;
+  --text-secondary-2: #9d9e8d;
+
+  /* Cards & Containers */
+  --card-base-1: #d2cfc7;
+  --card-base-2: #e4ded5;
+  --card-hover: #fbf7f0;
+
+  /* Accents */
+  --accent-subtle: #8f866e;
+  --accent-cta: #f1b36d;
+
+  /* Icons */
+  --icon-dark: #61655e;
+  --icon-accent: #8f866e;
+
+  /* Borders & Dividers */
+  --border-light: #d2cfc7;
+  --border-mid: #9d9e8d;
 }
 
-/* H2: Elegant and Timeless */
-h2 {
-  color: #885933; /* H2–H6 color */
-  font-family: 'Playfair Display', serif;
-  font-weight: 700; /* Bold */
-  font-size: 36px;
-  font-style: italic; /* Adds artisanal flair */
-  letter-spacing: 0.5px;
+/* ===============================
+   GLOBAL RESETS + TYPOGRAPHY
+   =============================== */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Quattrocento Sans', sans-serif;
+  background-color: var(--bg-main-1);
+  color: var(--text-primary);
+  line-height: 1.55;
 }
 
-/* H3: Artisan Subheadings */
-h3 {
-  color: #885933;
-  font-family: 'Lora', serif;
-  font-weight: 600; /* Semi-bold */
-  font-size: 30px;
-  font-style: normal; /* For balance */
-}
-
-/* H4, H5, H6: Delicate Balance */
+h1,
+h2,
+h3,
 h4,
 h5,
 h6 {
-  color: #885933;
   font-family: 'Josefin Sans', sans-serif;
-  font-weight: 300; /* Light */
-  font-style: italic; /* Optional */
+  color: var(--text-primary);
+  margin-top: 0;
   letter-spacing: 0.5px;
 }
 
-h4 {
-  font-size: 24px;
-}
-h5 {
-  font-size: 20px;
-  text-decoration: underline;
-  font-weight: 600;
-}
-h6 {
-  font-size: 18px;
-}
-
-/* Body Text: Clean and Readable */
-body,
 p {
-  color: #34251d; /* Main text color */
-  font-family: 'Lora', serif;
-  font-weight: 400; /* Regular */
-  font-size: 16px;
-  line-height: 1.7; /* Spacious and legible */
-  background-color: #fbf7f0; /* Primary background */
+  color: var(--text-secondary-1);
+  margin-bottom: 1rem;
 }
 
-/* Blockquote Styling */
-blockquote {
-  font-family: 'Playfair Display', serif;
-  color: #d9a052; /* Blockquote text color */
-  border-left: 4px solid #938298; /* Accent border */
-  padding-left: 10px;
-  margin: 1em 0; /* Adds spacing around blockquotes */
+/* ===============================
+   UTILITY CLASSES
+   =============================== */
+.bg-main {
+  background-color: var(--bg-main-1);
+}
+.bg-main-alt {
+  background-color: var(--bg-main-2);
+}
+.bg-section {
+  background-color: var(--bg-alt);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+.text-secondary {
+  color: var(--text-secondary-1);
+}
+.text-secondary-2 {
+  color: var(--text-secondary-2);
+}
+
+.divider {
+  border-bottom: 1px solid var(--border-mid);
+  margin: 1.5rem 0;
+}
+
+/* ===============================
+   LINKS
+   =============================== */
+a {
+  color: var(--accent-subtle);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-cta);
+}
+
+/* ===============================
+   BUTTONS
+   =============================== */
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    transform 0.15s;
+}
+
+.btn-primary {
+  background-color: var(--accent-cta);
+  color: var(--text-primary);
+}
+
+.btn-primary:hover {
+  background-color: #e0a460; /* slightly darker version of CTA */
+}
+
+.btn-secondary {
+  background-color: var(--accent-subtle);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #7c7664;
+}
+
+/* ===============================
+   CARDS & CONTAINERS
+   =============================== */
+.card {
+  background-color: var(--card-base-2);
+  border: 1px solid var(--border-light);
+  padding: 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.25s ease;
+}
+
+.card:hover {
+  background-color: var(--card-hover);
+}
+
+.icon {
+  color: var(--icon-dark);
+}
+
+.icon-accent {
+  color: var(--icon-accent);
+}
+
+/* ===============================
+   NAVIGATION + HEADINGS (Hierarchy)
+   =============================== */
+nav a,
+.header-title {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* ===============================
+  HOMEPAGE SECTION STYLING
+   =============================== */
+
+.home-section {
+  background-color: var(--bg-main-1);
+  padding: 3rem 1.5rem;
+}
+
+.home-section .feature-card {
+  background-color: var(--card-base-2);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.home-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.home-section .btn-primary {
+  margin-top: 1rem;
+}
+
+/* ===============================
+   CUSTOM STYLING
+   =============================== */
+.ft-proposedPrice {
+  font-weight: 800;
 }
