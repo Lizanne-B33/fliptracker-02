@@ -93,7 +93,7 @@ class Product(models.Model):
     NEW = "like_new"
     RESTORED = "restored"
     BEST = "used_excellent"
-    BETTER = "used_very Good"
+    BETTER = "used_very_good"
     GOOD = "used_good"
     UNDEFINED = "undefined"
     CONDITION_CHOICES = [
@@ -120,16 +120,16 @@ class Product(models.Model):
     title = models.CharField(max_length=255, blank=True)
     prod_image = models.ImageField(upload_to='images/')
     cost = models.DecimalField(max_digits=8, decimal_places=2)
-    cost_unit = models.CharField(
-        max_length=15, choices=UOM_CHOICES, default='each')
     ai_desc = models.TextField(blank=True)
     fast_notes = models.TextField(blank=True)
     user_desc = models.TextField(blank=True)
-    qty = models.IntegerField(default=1)
+    purch_qty = models.IntegerField(default=1)
+    sold_qty = models.IntegerField(default=0)
+    qty_unit = models.CharField(
+        max_length=15, choices=UOM_CHOICES, default='each')
     price = models.DecimalField(
         max_digits=6, decimal_places=2, blank=True, null=True)
-    price_unit = models.CharField(
-        max_length=15, choices=UOM_CHOICES, default='each')
+
     category = models.ForeignKey(
         "Category", on_delete=models.PROTECT, default=get_default_category)
     brand = models.CharField(max_length=255, blank=True)

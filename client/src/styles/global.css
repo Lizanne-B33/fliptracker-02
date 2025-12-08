@@ -160,11 +160,29 @@ a:hover {
 
 /* ===============================
    NAVIGATION + HEADINGS (Hierarchy)
+   PAGINATION
    =============================== */
 nav a,
 .header-title {
   color: var(--text-primary);
   font-weight: 700;
+}
+.pagination {
+  display: flex;
+  list-style: none;
+  gap: 0.5rem;
+  padding: 0;
+  margin-top: 25px;
+}
+
+.pagination li {
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+.pagination .active {
+  font-weight: bold;
+  border-bottom: 2px solid var(--accent-cta);
 }
 
 /* ===============================

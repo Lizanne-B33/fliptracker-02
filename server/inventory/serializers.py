@@ -77,8 +77,6 @@ class ProductCreateUpdateSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['owner', 'created_at', 'updated_at']
 
-# Intended for create only - generally from mobile
-
 
 class ProductFastEntrySerializer(serializers.ModelSerializer):
     category_id = serializers.PrimaryKeyRelatedField(
@@ -91,9 +89,8 @@ class ProductFastEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = (
-            'title', 'qty', 'prod_image', 'cost', 'cost_unit',
-            'ai_desc', 'condition', 'fast_notes',
-            'category', 'category_id'
+            'title', 'prod_image', 'category', 'category_id', 'cost', 'purch_qty', 'qty_unit',
+            'ai_desc', 'fast_notes', 'condition'
         )
         read_only_fields = ['owner', 'created_at', 'updated_at']
 

@@ -9,6 +9,7 @@ import SelectField from '../../components/formFields/SelectField.jsx';
 import NumberField from '../../components/formFields/NumberField.jsx';
 import FileField from '../../components/formFields/FileField.jsx';
 import { getFieldError } from '../../utils/errorHelpers';
+import { formatCurrency } from '../../utils/formatCurrency.js';
 
 const ProductFastForm = ({
   // Component Props
@@ -35,24 +36,18 @@ const ProductFastForm = ({
     title: '',
     prod_image: '',
     cost: '',
-    cost_unit: 'each',
-    qty: 1,
+    qty_unit: 'each',
+    purch_qty: 1,
     price: '',
-    price_unit: 'each',
     category_id: '',
-    product_type_id: '',
-    brand: '',
-    color: '',
-    size: '',
     condition: 'undefined',
     status: 'acquired',
     ai_desc: '',
     fast_notes: '',
-    user_desc: '',
     commit: 'choose...',
   });
 
-  // Prefill when editing
+  // Prefill when editing (fastEdit only!)
   useEffect(() => {
     if (item) {
       setFormData({
@@ -60,21 +55,14 @@ const ProductFastForm = ({
         title: item.title,
         prod_image: item.prod_image,
         cost: item.cost,
-        cost_unit: item.cost_unit,
-        qty: item.qty,
-        price: item.price,
-        price_unit: item.price_unit,
+        purch_qty: item.purch_qty,
+        qty_unit: item.qty_unit,
         product_type_id: '', // used for filtering categories
         category_id: item.category.id,
-        brand: item.brand,
-        color: item.color,
-        size: item.size,
         condition: item.condition,
         status: item.status,
         ai_desc: item.ai_desc,
         fast_notes: item.fast_notes,
-        user_desc: item.user_desc,
-        commit: item.commit,
       });
     } else {
       resetForm();
@@ -135,14 +123,28 @@ const ProductFastForm = ({
   };
 
   // Duck helped me with this code block.
+  const conditionFactors = {
+    like_new: 1,
+    restored: 0.95,
+    used_excellent: 1,
+    used_very_good: 0.95,
+    used_good: 0.75,
+    undefined: 1,
+  };
+
   const calculateProposedPrice = () => {
     const cost = parseFloat(formData.cost);
-    return cost * 4;
+    const factor = conditionFactors[formData.condition] ?? 1;
+    return cost * 4 * factor;
   };
 
   const calculateProfit = () => {
     const cost = parseFloat(formData.cost);
     return calculateProposedPrice() * 0.75 - cost;
+  };
+
+  const calculateTotalProfit = () => {
+    return calculateProfit() * formData.purch_qty;
   };
 
   return (
@@ -207,17 +209,17 @@ const ProductFastForm = ({
         <NumberField
           label="Quantity"
           type="number"
-          name="qty"
-          value={formData.qty}
+          name="purch_qty"
+          value={formData.purch_qty}
           onChange={handleChange}
           placeholder="Enter number purchased"
           required
           min={0}
         />
         <SelectField
-          label="Cost Unit"
-          name="cost_unit"
-          value={formData.cost_unit}
+          label="Quantity Unit"
+          name="qty_unit"
+          value={formData.qty_unit}
           onChange={handleChange}
           required
         >
@@ -227,8 +229,8 @@ const ProductFastForm = ({
         </SelectField>
         <SelectField
           label="Condition"
-          name="condition_id"
-          value={formData.condition_id}
+          name="condition"
+          value={formData.condition}
           onChange={handleChange}
           required
         >
@@ -285,8 +287,11 @@ const ProductFastForm = ({
         style={{ display: formData.cost !== '' ? 'block' : 'none' }}
       >
         <p>
-          Proposed Price for this item(s) is {calculateProposedPrice()}.
-          Assuming a 25% sales cost, your profit will be {calculateProfit()}.
+          Proposed Price per {formData.qtyUnit} for this item is{' '}
+          {formatCurrency(calculateProposedPrice())}. Assuming a 25% sales cost,
+          your profit will be {formatCurrency(calculateProfit())} per{' '}
+          {formData.qtyUnit}. This could be a total profit of{' '}
+          {formatCurrency(calculateTotalProfit())}.
         </p>
       </Row>
       <Button
