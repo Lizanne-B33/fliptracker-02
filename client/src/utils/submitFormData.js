@@ -9,7 +9,9 @@ export const submitFormData = async (
   resetForm,
   setLoading,
   setError,
-  setSuccess
+  setSuccess,
+  refreshList,
+  method = 'POST' // default for create, edit will pass in the PUT.
 ) => {
   // 1: Sets the user interface state.
   setLoading(true);
@@ -40,14 +42,27 @@ export const submitFormData = async (
 
     // 4: Sends payload to backend (Django )
     // Axios sends the FormData with correct headers, DRF sees the FK Ids.
-    const response = await axiosInstance.post(endpoint, payload, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    let response;
+    if (method === 'PUT') {
+      response = await axiosInstance.put(endpoint, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    } else {
+      response = await axiosInstance.post(endpoint, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    }
 
     // 5. Handle success and or errors.
     console.log('Saved:', response.data);
     setSuccess(true);
     resetForm();
+
+    if (typeof refreshList === 'function') {
+      console.log('Calling refreshList...');
+      await refreshList(); // e.g. re-fetch categories or product types
+    }
+
     return response.data;
   } catch (err) {
     if (err.response && err.response.data) {

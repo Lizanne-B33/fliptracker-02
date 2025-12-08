@@ -41,24 +41,18 @@ const ProductTypeForm = ({ productType, onSaved }) => {
     const payload = { ...formData, name: normalizedName };
 
     try {
-      if (productType) {
-        // Edit mode
-        await axiosInstance.put(
-          `/api/inventory/product_type/${productType.id}/`,
-          payload
-        );
-      } else {
-        // Create mode
-        await submitFormData(
-          '/api/inventory/product_type/',
-          payload,
-          resetForm,
-          setLoading,
-          setError,
-          setSuccess
-        );
-      }
-      if (onSaved) onSaved(); // ✅ refresh parent list
+      await submitFormData(
+        productType
+          ? `/api/inventory/product_type/${productType.id}/`
+          : '/api/inventory/product_type/',
+        payload,
+        resetForm,
+        setLoading,
+        setError,
+        setSuccess,
+        onSaved,
+        productType ? 'PUT' : 'POST'
+      );
     } catch (err) {
       setError(err);
     }

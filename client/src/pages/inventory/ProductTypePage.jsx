@@ -1,30 +1,41 @@
-// Source:
-
-import { useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { axiosInstance } from '../../api/apiConfig';
+// Imports react state hook and components that are on the page.
+import { useState } from 'react';
 import ProductTypeForm from '../../components/inventory/ProductTypeForm';
 import ProductTypeList from '../../components/inventory/ProductTypeList';
-import { fetchList } from '../../utils/fetchList';
-console.log('fetchList is:', fetchList);
+import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
+import { refreshWithFlip } from '../../utils/refreshWithFlip';
 
+//==========================
+// PAGE COMPONENT DEFINITION
+//==========================
+// selected: tracks which item is being edited.
+// Null is create mode, if there is an object it is in edit mode.
 const ProductTypePage = () => {
-  // State variables used to Toggle between new object and edited object.
-  const [productTypes, setProductTypes] = useState([]);
   const [selected, setSelected] = useState(null);
 
-  // initial load
-  useEffect(() => {
-    fetchList('/api/inventory/product_type/', setProductTypes);
-  }, []);
+  // Calls pagination hook with correct API endpoint
+  // Page controls the refresh and passes data to list.
+  const {
+    items: productTypes, // current page of product types
+    pageCount: productTypePageCount, // total number of pages
+    fetchPage: fetchProductTypePage, // function to load a specific page
+    currentPage: currentProductTypePage, // which page is currently active
+  } = usePaginatedFetch('/api/inventory/product_type/');
 
-  // refresh after create/update
-  const handleRefresh = () => {
-    fetchList('/api/inventory/product_type/', setProductTypes);
-    // Returns to Create Mode.
+  // Defines the refresh logic
+  // calls utility to flip the page in order to seamlessly update the values in the list.
+  const handleRefresh = async () => {
+    await refreshWithFlip(
+      fetchProductTypePage,
+      currentProductTypePage,
+      productTypePageCount
+    );
     setSelected(null);
   };
 
+  //==========================
+  // RENDERS THE PAGE
+  //==========================
   return (
     <div className="topParent">
       <section className="hero">
@@ -32,14 +43,14 @@ const ProductTypePage = () => {
           <h1 className="ft-bigtext mb-5">Product Type Management</h1>
           <hr />
           <div className="row welcome-hero">
-            {/* Passing a Parm selected (if create or update) and a list refresh. */}
             <ProductTypeForm productType={selected} onSaved={handleRefresh} />
           </div>
           <hr />
           <div className="row lists mt-5">
-            {/* List of product types */}
             <ProductTypeList
-              items={productTypes} //must match the prop name
+              items={productTypes}
+              pageCount={productTypePageCount}
+              fetchPage={fetchProductTypePage}
               onSelect={setSelected}
             />
           </div>
@@ -48,4 +59,6 @@ const ProductTypePage = () => {
     </div>
   );
 };
+
+// Exports page to be used in Router in backend.
 export default ProductTypePage;

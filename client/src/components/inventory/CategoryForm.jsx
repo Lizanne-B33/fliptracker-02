@@ -47,24 +47,18 @@ const CategoryForm = ({ category, productTypes = [], onSaved }) => {
     const payload = { ...formData, name: normalizedName };
 
     try {
-      if (category) {
-        // Edit mode
-        await axiosInstance.put(
-          `/api/inventory/category/${category.id}/`,
-          payload
-        );
-      } else {
-        // Create mode
-        await submitFormData(
-          '/api/inventory/category/',
-          payload,
-          resetForm,
-          setLoading,
-          setError,
-          setSuccess
-        );
-      }
-      if (onSaved) onSaved(); //refresh list
+      await submitFormData(
+        category
+          ? `/api/inventory/category/${category.id}/`
+          : '/api/inventory/category/',
+        payload,
+        resetForm,
+        setLoading,
+        setError,
+        setSuccess,
+        onSaved,
+        category ? 'PUT' : 'POST' // add method parameter
+      );
     } catch (err) {
       setError(err);
     }

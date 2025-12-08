@@ -2,19 +2,15 @@
 // takes a endpoint and state setter and updates the list.
 
 // fetchList.js
+// src/utils/fetchList.js
 import { axiosInstance } from '../api/apiConfig';
 
-export const fetchList = async (endpoint, setState) => {
+export async function fetchList(url) {
   try {
-    const res = await axiosInstance.get(endpoint);
-    console.log('fetchList response for', endpoint, res.data);
-
-    const items = Array.isArray(res.data) ? res.data : res.data.results;
-    setState(items);
-
-    return res.data; // return full response so hook can use count, next, previous
+    const res = await axiosInstance.get(url);
+    return res.data; // Expecting { count, results: [...] }
   } catch (err) {
-    console.error(`Fetch error for ${endpoint}:`, err);
-    return null;
+    console.error(`Fetch error for ${url}:`, err);
+    throw err;
   }
-};
+}

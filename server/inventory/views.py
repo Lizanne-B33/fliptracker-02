@@ -43,7 +43,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """
     API endpoint for an admin to create categories
     """
-    queryset = Category.objects.all().order_by('name')
+    queryset = Category.objects.all().order_by('product_type__name', 'name')
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
     # TODO change to object level permissions so that the categories don't get out of control.

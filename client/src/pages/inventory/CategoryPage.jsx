@@ -1,29 +1,61 @@
+// Imports React state hook and components that are on the page.
 import React, { useState, useEffect } from 'react';
-import { fetchList } from '../../utils/fetchList';
+import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
 import CategoryForm from '../../components/inventory/CategoryForm';
 import CategoryList from '../../components/inventory/CategoryList';
+import { refreshWithFlip } from '../../utils/refreshWithFlip';
 
+//==========================
+// PAGE COMPONENT DEFINITION
+//==========================
 const CategoryPage = () => {
-  // SET STATES
-  const [productTypes, setProductTypes] = useState([]); // FK for categories
-  const [categories, setCategories] = useState([]); // List of Categories
-  const [selected, setSelected] = useState(null); // Default is Create Mode
+  // Track which category is selected for editing (null = create mode)
+  const [selected, setSelected] = useState(null);
+  const [listVersion, setListVersion] = useState(0);
 
-  // initial Data Fetch - runs once when page opens
+  // Pagination hook for categories
+  const {
+    items: rawCategories,
+    pageCount: categoryPageCount,
+    fetchPage: fetchCategoryPage,
+    currentPage: currentCategoryPage,
+  } = usePaginatedFetch('/api/inventory/category/');
+
+  // Pagination hook for product types (used as FK dropdown in form)
+  const {
+    items: productTypes,
+    pageCount: productTypePageCount,
+    fetchPage: fetchProductTypePage,
+    currentPage: currentProductTypePage,
+  } = usePaginatedFetch('/api/inventory/product_type/');
+
+  // Normalize nested product_type objects so React sees new references
+  const categories = Array.isArray(rawCategories)
+    ? rawCategories.map((cat) => ({
+        ...cat,
+        product_type: cat.product_type ? { ...cat.product_type } : null,
+      }))
+    : [];
+
+  // Debug: log categories after every refresh
   useEffect(() => {
-    fetchList('/api/inventory/category/', setCategories);
-    fetchList('/api/inventory/product_type/', setProductTypes);
-  }, []);
+    console.log('Categories after refresh:', categories);
+  }, [categories]);
 
-  // refresh after create/update -
-  // runs after update to pull a new list of objects.
-  // Returns button to create mode.
-  const handleRefresh = () => {
-    fetchList('/api/inventory/category/', setCategories);
+  // forcing React to notice changes in the dataset.
+  const handleRefresh = async () => {
+    await refreshWithFlip(
+      fetchCategoryPage,
+      currentCategoryPage,
+      categoryPageCount
+    );
     setSelected(null);
+    setListVersion((v) => v + 1); // bump version after refresh
   };
 
-  // JSX Layout
+  //==========================
+  // RENDERS THE PAGE
+  //==========================
   return (
     <div className="topParent">
       <section className="hero">
@@ -31,17 +63,20 @@ const CategoryPage = () => {
           <h1 className="ft-bigtext mb-5">Category Management</h1>
           <hr />
           <div className="row welcome-hero">
-            <CategoryForm // Form stuff
-              category={selected} // Category being edited
-              productTypes={productTypes} // FK options for dropdown
-              onSaved={handleRefresh} // Refresh after save.
+            <CategoryForm
+              category={selected}
+              productTypes={productTypes}
+              onSaved={handleRefresh}
             />
           </div>
           <hr />
           <div className="row lists">
-            <CategoryList // List Stuff
-              items={categories} // List of categories
-              onSelect={setSelected} // click --> selected
+            <CategoryList
+              key={`cat-list-${listVersion}`}
+              items={categories}
+              pageCount={categoryPageCount}
+              fetchPage={fetchCategoryPage}
+              onSelect={setSelected}
             />
           </div>
         </div>

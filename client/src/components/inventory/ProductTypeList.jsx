@@ -1,19 +1,25 @@
 // ProductTypeList.js
-import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
+// react-paginate is the library that handles rendering pages and nav controls.
 import ReactPaginate from 'react-paginate';
 
-function ProductTypeList({ onSelect }) {
-  // Rename items to productTypes keeps from getting confused.
-  const {
-    items: productTypes,
-    pageCount,
-    fetchPage,
-  } = usePaginatedFetch('/api/inventory/product_type/');
+//=========================================
+// DEFINE THE COMPONENT
+//=========================================
+// items: current page of items (array of objects)
+// pageCount: total pages (calc by hook)
+// fetchPage: loads specific page from API
+// onSelect: callback to tell parent which item was clicked (editing.)
 
+function ProductTypeList({ items, pageCount, fetchPage, onSelect }) {
+  console.log('ProductTypeList items:', items); // debugging
+
+  //=========================================
+  // RENDERING THE LIST & PAGINATION CONTROLS
+  //==========================================
   return (
     <>
       <div className="row ft-listItems">
-        {productTypes.map((pt) => (
+        {items.map((pt) => (
           <div className="col-3 text-start" key={pt.id}>
             <h6 onClick={() => onSelect(pt)}>{pt.name}</h6>
           </div>
@@ -27,7 +33,6 @@ function ProductTypeList({ onSelect }) {
         pageCount={pageCount}
         marginPagesDisplayed={2}
         pageRangeDisplayed={5}
-        // React-paginate starts at 0, so adding 1 for the DRF page structure.
         onPageChange={(selected) => fetchPage(selected.selected + 1)}
         containerClassName={'pagination'}
         activeClassName={'active'}
