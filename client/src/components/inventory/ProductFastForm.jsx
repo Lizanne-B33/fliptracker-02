@@ -83,7 +83,15 @@ const ProductFastForm = ({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      // makes sure that catID is an integer.
+      [name]: name === 'category_id' ? parseInt(value, 10) : value,
+    }));
+    // Resets the form if the user selects the No, don't commit selection.
+    if (name === 'commit' && value === 'reset') {
+      resetForm();
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -120,6 +128,8 @@ const ProductFastForm = ({
       }
       if (onSaved) onSaved();
     } catch (err) {
+      console.error('Error object:', err);
+      console.error('Response data:', err.response?.data);
       setError(err);
     }
   };
@@ -127,12 +137,12 @@ const ProductFastForm = ({
   // Duck helped me with this code block.
   const calculateProposedPrice = () => {
     const cost = parseFloat(formData.cost);
-    return cost * 4 * 0.75;
+    return cost * 4;
   };
 
   const calculateProfit = () => {
     const cost = parseFloat(formData.cost);
-    return calculateProposedPrice() - cost;
+    return calculateProposedPrice() * 0.75 - cost;
   };
 
   return (
@@ -251,7 +261,7 @@ const ProductFastForm = ({
           name="fast_notes"
           value={formData.fast_notes}
           onChange={handleChange}
-          placeholder="Enter information copied from AI or other source"
+          placeholder="Enter your own notes. "
           error={getFieldError(error, 'fast_notes')}
         />
         <SelectField
@@ -272,15 +282,18 @@ const ProductFastForm = ({
       </Row>
       <Row
         className="ft-proposedPrice"
-        style={{ display: formData.commit !== 'choose...' ? 'block' : 'none' }}
+        style={{ display: formData.cost !== '' ? 'block' : 'none' }}
       >
         <p>
           Proposed Price for this item(s) is {calculateProposedPrice()}.
           Assuming a 25% sales cost, your profit will be {calculateProfit()}.
         </p>
       </Row>
-
-      <Button type="submit" disabled={loading}>
+      <Button
+        id="submitBtn"
+        type="submit"
+        disabled={loading || formData.commit !== 'confirm'}
+      >
         {loading ? 'Saving...' : item ? 'Update' : 'Create'}
       </Button>
       {success && <p style={{ color: 'green' }}>Saved successfully!</p>}
