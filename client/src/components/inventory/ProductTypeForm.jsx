@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
 import { axiosInstance } from '../../api/apiConfig';
-import { submitFormData } from '../../utils/formSubmit.js';
+import { submitFormData } from '../../utils/submitFormData.js';
 import { useFormState } from '../../hooks/useFormState';
 import TextField from '../formFields/TextField';
 import { getFieldError } from '../../utils/errorHelpers';

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
 import { axiosInstance } from '../../api/apiConfig';
-import { submitFormData } from '../../utils/formSubmit.js';
+import { submitFormData } from '../../utils/submitFormData.js';
 import { useFormState } from '../../hooks/useFormState';
 import TextField from '../../components/formFields/TextField';
 import SelectField from '../../components/formFields/SelectField.jsx';
@@ -27,7 +27,7 @@ const CategoryForm = ({ category, productTypes = [], onSaved }) => {
       setFormData({
         id: category.id,
         name: category.name,
-        product_type_id: category.product_type.id, // ✅ nested serializer gives object
+        product_type_id: category.product_type.id, //nested serializer gives object
       });
     } else {
       resetForm();
@@ -64,7 +64,7 @@ const CategoryForm = ({ category, productTypes = [], onSaved }) => {
           setSuccess
         );
       }
-      if (onSaved) onSaved(); // ✅ refresh parent list
+      if (onSaved) onSaved(); //refresh list
     } catch (err) {
       setError(err);
     }

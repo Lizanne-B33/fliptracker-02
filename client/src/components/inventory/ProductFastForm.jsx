@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
 import { axiosInstance } from '../../api/apiConfig';
-import { submitFormData } from '../../utils/formSubmit.js';
+import { submitFormData } from '../../utils/submitFormData.js';
 import { useFormState } from '../../hooks/useFormState';
 import TextField from '../../components/formFields/TextField';
 import TextAreaField from '../../components/formFields/TextAreaField';
@@ -21,7 +21,12 @@ const ProductFastForm = ({
   endpoint,
   categories,
 }) => {
-  // Initial Form State
+  //================================================
+  // INITIAL STATE (State Initialization)
+  // ===============================================
+  // Using a custom hook (UseFormState to manage for state and UI flags)
+  // formData begins as a plain object with defaults.
+  // Loading, error, success are flags for UI feedback.
   const {
     formData,
     setFormData,
@@ -47,7 +52,8 @@ const ProductFastForm = ({
     commit: 'choose...',
   });
 
-  // Prefill when editing (fastEdit only!)
+  // Prefill when editing  -- if item is passed in, then the fields are prefilled.
+  // otherwise gets defaults in the fields.
   useEffect(() => {
     if (item) {
       setFormData({
@@ -69,8 +75,16 @@ const ProductFastForm = ({
     }
   }, [item]);
 
+  //================================================
+  // CHANGE HANDLING
+  // ===============================================
+  // every field calls handleChange when updated,
+  // because Category is a FK, we need to parse into an integer.
+  // If user selects reset at the commit? then the form resets.
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log('handleChange:', name, value);
     setFormData((prev) => ({
       ...prev,
       // makes sure that catID is an integer.
@@ -81,9 +95,16 @@ const ProductFastForm = ({
       resetForm();
     }
   };
+  //================================================
+  // SUBMIT HANDLING
+  // ===============================================
+  // title is formatted to be capital letter first, then lowercase.
+  // Can update an existing item with PUT, or create a new item by calling
+  // submitFormData.
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('handleSubmit fired, formData is:', formData);
 
     // Normalize the title to single capital letter then all lowercase if a title exists.
     // the ? checks to see if formData.title is truthy
@@ -107,7 +128,7 @@ const ProductFastForm = ({
       } else {
         await submitFormData(
           endpoint,
-          payload,
+          { ...formData, title: normalizedName }, // plain object
           resetForm,
           setLoading,
           setError,
@@ -121,7 +142,9 @@ const ProductFastForm = ({
       setError(err);
     }
   };
-
+  //================================================
+  // BUSINESS LOGIC HELPERS
+  // ===============================================
   // Duck helped me with this code block.
   const conditionFactors = {
     like_new: 1,
@@ -147,6 +170,9 @@ const ProductFastForm = ({
     return calculateProfit() * formData.purch_qty;
   };
 
+  //================================================
+  // RENDERING OF THE FORM USING formFields.
+  // ===============================================
   return (
     <Form className="container mt-3 mb-3" onSubmit={handleSubmit}>
       <Row className="mb-3">
@@ -166,7 +192,6 @@ const ProductFastForm = ({
           name="product_type_id"
           value={formData.product_type_id}
           onChange={handleChange}
-          // Creates empty array if the timing is off on getting props.
           options={(productTypes || []).map((pt) => ({
             value: pt.id,
             label: pt.name,
@@ -179,7 +204,6 @@ const ProductFastForm = ({
           name="category_id"
           value={formData.category_id}
           onChange={handleChange}
-          // Creates empty array if the timing is off on getting props.
           options={(categories || [])
             .filter(
               (c) =>
@@ -235,17 +259,19 @@ const ProductFastForm = ({
           required
         >
           <option value="undefined">Undefined</option>
-          <option value="new">New</option>
+          <option value="like_new">Like New</option>
           <option value="restored">Restored</option>
-          <option value="best">Best</option>
-          <option value="better">Better</option>
-          <option value="good">Good</option>
+          <option value="used_excellent">Used Excellent</option>
+          <option value="used_very_good">Used Very Good</option>
+          <option value="used_good">Used Good</option>
         </SelectField>
         <FileField
           label="Product Image"
           type="file"
           name="prod_image"
-          onChange={handleChange}
+          onChange={(e) =>
+            setFormData({ ...formData, prod_image: e.target.files[0] })
+          }
           required
         />
         <TextAreaField
@@ -287,10 +313,15 @@ const ProductFastForm = ({
         style={{ display: formData.cost !== '' ? 'block' : 'none' }}
       >
         <p>
-          Proposed Price per {formData.qtyUnit} for this item is{' '}
-          {formatCurrency(calculateProposedPrice())}. Assuming a 25% sales cost,
-          your profit will be {formatCurrency(calculateProfit())} per{' '}
-          {formData.qtyUnit}. This could be a total profit of{' '}
+          Proposed Price per {formData.qty_unit} for this item is{' '}
+          {formatCurrency(calculateProposedPrice())}.
+        </p>
+        <p>
+          Assuming a 25% sales cost, your profit will be{' '}
+          {formatCurrency(calculateProfit())} per {formData.qty_unit}.
+        </p>
+        <p>
+          This could be a total profit of{' '}
           {formatCurrency(calculateTotalProfit())}.
         </p>
       </Row>

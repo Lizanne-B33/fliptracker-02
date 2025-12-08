@@ -16,8 +16,8 @@ def test_fast_entry_viewset_create(authenticated_client, test_image, category):
     data = {
         "title": "Quick Add Product",
         "prod_image": test_image,
-        "qty": 3,
-        "cost_unit": "each",
+        "purch_qty": 3,
+        "qty_unit": "each",
         "cost": 12.50,
         "ai_desc": "AI quick description",
         "category_id": category.id,
@@ -31,7 +31,7 @@ def test_fast_entry_viewset_create(authenticated_client, test_image, category):
     assert response.status_code == 201
     product = Product.objects.get(title="Quick Add Product")
     assert product.owner == user
-    assert product.qty == 3
-    assert product.cost_unit == "each"
+    assert product.purch_qty == 3
+    assert product.qty_unit == "each"
     assert float(product.cost) == 12.50
     assert product.ai_desc == "AI quick description"
