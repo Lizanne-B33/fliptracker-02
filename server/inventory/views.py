@@ -11,9 +11,11 @@ from .models import Product, Tag, Category, ProductType
 from user.models import User  # Importing from another app
 from rest_framework import permissions, viewsets
 from .serializers import ProductCreateUpdateSerializer, ProductFastEntrySerializer, TagSerializer, CategorySerializer, ProductTypeSerializer
-
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     """
@@ -47,6 +49,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [permissions.IsAuthenticated]
     # TODO change to object level permissions so that the categories don't get out of control.
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['name']
+    filterset_fields = ['product_type']
 
 
 class ProductTypeViewSet(viewsets.ModelViewSet):
@@ -56,4 +61,6 @@ class ProductTypeViewSet(viewsets.ModelViewSet):
     queryset = ProductType.objects.all().order_by('name')
     serializer_class = ProductTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    # TODO change to object level permissions so that the categories don't get out of control.
+    # TODO change to object level permissions so that the product types don't get out of control.
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']

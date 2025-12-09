@@ -3,8 +3,9 @@
 
 import axios from 'axios';
 
+// Use environment variable for baseURL so dev/prod can differ
 export const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000', //
+  baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000',
 });
 
 // Attach token automatically to every request
@@ -31,7 +32,8 @@ axiosInstance.interceptors.response.use(
 
       if (refreshToken) {
         try {
-          const res = await axios.post('/api/token/refresh/', {
+          // IMPORTANT: use axiosInstance with baseURL, not bare axios
+          const res = await axiosInstance.post('/api/token/refresh/', {
             refresh: refreshToken,
           });
           localStorage.setItem('accessToken', res.data.access);

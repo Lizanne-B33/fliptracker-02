@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
 import { axiosInstance } from '../../api/apiConfig';
 import { submitFormData } from '../../utils/submitFormData.js';
@@ -6,27 +6,17 @@ import { useFormState } from '../../hooks/useFormState';
 import TextField from '../../components/formFields/TextField';
 import TextAreaField from '../../components/formFields/TextAreaField';
 import SelectField from '../../components/formFields/SelectField.jsx';
+import AsyncSelectField from '../../components/formFields/AsyncSelectField.jsx';
 import NumberField from '../../components/formFields/NumberField.jsx';
 import FileField from '../../components/formFields/FileField.jsx';
 import { getFieldError } from '../../utils/errorHelpers';
 import { formatCurrency } from '../../utils/formatCurrency.js';
 
-const ProductFastForm = ({
-  // Component Props
-  Product,
-  item,
-  onSaved,
-  fields,
-  productTypes,
-  endpoint,
-  categories,
-}) => {
+const ProductFastForm = ({ item, onSaved, endpoint }) => {
+  const fileInputRef = useRef(null);
   //================================================
-  // INITIAL STATE (State Initialization)
-  // ===============================================
-  // Using a custom hook (UseFormState to manage for state and UI flags)
-  // formData begins as a plain object with defaults.
-  // Loading, error, success are flags for UI feedback.
+  // INITIAL STATE
+  //================================================
   const {
     formData,
     setFormData,
@@ -39,11 +29,12 @@ const ProductFastForm = ({
     setSuccess,
   } = useFormState({
     title: '',
-    prod_image: '',
+    prod_image: null,
     cost: '',
     qty_unit: 'each',
     purch_qty: 1,
     price: '',
+    product_type_id: '',
     category_id: '',
     condition: 'undefined',
     status: 'acquired',
@@ -52,23 +43,23 @@ const ProductFastForm = ({
     commit: 'choose...',
   });
 
-  // Prefill when editing  -- if item is passed in, then the fields are prefilled.
-  // otherwise gets defaults in the fields.
+  // Prefill when editing
   useEffect(() => {
     if (item) {
       setFormData({
         id: item.id,
         title: item.title,
         prod_image: item.prod_image,
-        cost: item.cost,
+        cost: item.cost != null ? Number(item.cost) : '',
         purch_qty: item.purch_qty,
         qty_unit: item.qty_unit,
-        product_type_id: '', // used for filtering categories
-        category_id: item.category.id,
+        product_type_id: item.product_type?.id ?? '',
+        category_id: item.category?.id ?? '',
         condition: item.condition,
         status: item.status,
         ai_desc: item.ai_desc,
         fast_notes: item.fast_notes,
+        commit: 'choose...',
       });
     } else {
       resetForm();
@@ -77,49 +68,36 @@ const ProductFastForm = ({
 
   //================================================
   // CHANGE HANDLING
-  // ===============================================
-  // every field calls handleChange when updated,
-  // because Category is a FK, we need to parse into an integer.
-  // If user selects reset at the commit? then the form resets.
-
+  //================================================
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log('handleChange:', name, value);
     setFormData((prev) => ({
       ...prev,
-      // makes sure that catID is an integer.
       [name]: name === 'category_id' ? parseInt(value, 10) : value,
     }));
-    // Resets the form if the user selects the No, don't commit selection.
     if (name === 'commit' && value === 'reset') {
       resetForm();
     }
   };
+
   //================================================
   // SUBMIT HANDLING
-  // ===============================================
-  // title is formatted to be capital letter first, then lowercase.
-  // Can update an existing item with PUT, or create a new item by calling
-  // submitFormData.
-
+  //================================================
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('handleSubmit fired, formData is:', formData);
 
-    // Normalize the title to single capital letter then all lowercase if a title exists.
-    // the ? checks to see if formData.title is truthy
-    const normalizedName = formData.title
-      ? formData.title.trim().charAt(0).toUpperCase() +
-        formData.title.trim().slice(1).toLowerCase()
-      : '';
+    const payload = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null && value !== '') {
+        if (key === 'product_type_id' || key === 'category_id') {
+          payload.append(key, value?.value ?? '');
+        } else {
+          payload.append(key, value);
+        }
+      }
+    });
 
     try {
-      const payload = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        payload.append(key, value);
-      });
-      payload.set('title', normalizedName);
-
       if (item) {
         await axiosInstance.put(
           `/api/inventory/product_fast/${item.id}/`,
@@ -128,24 +106,32 @@ const ProductFastForm = ({
       } else {
         await submitFormData(
           endpoint,
-          { ...formData, title: normalizedName }, // plain object
+          {
+            ...formData,
+            product_type_id: formData.product_type_id?.value ?? null,
+            category_id: formData.category_id?.value ?? null,
+          },
           resetForm,
           setLoading,
           setError,
           setSuccess
         );
       }
+
+      // clear file input after successful submit
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      setFormData((prev) => ({ ...prev, prod_image: null }));
+
       if (onSaved) onSaved();
     } catch (err) {
-      console.error('Error object:', err);
-      console.error('Response data:', err.response?.data);
       setError(err);
     }
   };
   //================================================
   // BUSINESS LOGIC HELPERS
-  // ===============================================
-  // Duck helped me with this code block.
+  //================================================
   const conditionFactors = {
     like_new: 1,
     restored: 0.95,
@@ -171,8 +157,8 @@ const ProductFastForm = ({
   };
 
   //================================================
-  // RENDERING OF THE FORM USING formFields.
-  // ===============================================
+  // RENDERING
+  //================================================
   return (
     <Form className="container mt-3 mb-3" onSubmit={handleSubmit}>
       <Row className="mb-3">
@@ -187,32 +173,53 @@ const ProductFastForm = ({
           maxLength={255}
           error={getFieldError(error, 'title')}
         />
-        <SelectField
+        <AsyncSelectField
           label="Product Type"
           name="product_type_id"
-          value={formData.product_type_id}
-          onChange={handleChange}
-          options={(productTypes || []).map((pt) => ({
-            value: pt.id,
-            label: pt.name,
-          }))}
+          value={formData.product_type_id} // now stores { value, label }
+          onChange={(selected) =>
+            setFormData((prev) => ({
+              ...prev,
+              product_type_id: selected, // store full object
+            }))
+          }
+          loadOptions={(inputValue) =>
+            axiosInstance
+              .get('/api/inventory/product_type/', {
+                params: { search: inputValue },
+              })
+              .then((res) => {
+                const items = res.data.results ?? res.data;
+                return items.map((pt) => ({ value: pt.id, label: pt.name }));
+              })
+          }
           placeholder="Select a Product Type"
           required
+          error={getFieldError(error, 'product_type_id')}
         />
-        <SelectField
+        <AsyncSelectField
           label="Category"
           name="category_id"
-          value={formData.category_id}
-          onChange={handleChange}
-          options={(categories || [])
-            .filter(
-              (c) =>
-                String(c.product_type?.id) === String(formData.product_type_id)
-            )
-            .map((c) => ({
-              value: c.id,
-              label: c.name,
-            }))}
+          value={formData.category_id} // now stores { value, label }
+          onChange={(selected) =>
+            setFormData((prev) => ({
+              ...prev,
+              category_id: selected, // store full object
+            }))
+          }
+          loadOptions={(inputValue) =>
+            axiosInstance
+              .get('/api/inventory/category/', {
+                params: {
+                  product_type: formData.product_type_id?.value, // use ID from object
+                  search: inputValue,
+                },
+              })
+              .then((res) => {
+                const items = res.data.results ?? res.data;
+                return items.map((c) => ({ value: c.id, label: c.name }));
+              })
+          }
           error={
             getFieldError(error, 'category_id') ||
             (error?.non_field_errors?.[0] ?? null)
@@ -224,7 +231,7 @@ const ProductFastForm = ({
           label="Cost"
           type="number"
           name="cost"
-          value={formData.cost}
+          value={formData.cost ?? ''} // never undefined
           onChange={handleChange}
           placeholder="Purchase Price"
           required
@@ -266,11 +273,12 @@ const ProductFastForm = ({
           <option value="used_good">Used Good</option>
         </SelectField>
         <FileField
+          ref={fileInputRef}
           label="Product Image"
           type="file"
           name="prod_image"
           onChange={(e) =>
-            setFormData({ ...formData, prod_image: e.target.files[0] })
+            setFormData((prev) => ({ ...prev, prod_image: e.target.files[0] }))
           }
           required
         />
