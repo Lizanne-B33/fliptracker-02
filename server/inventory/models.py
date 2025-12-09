@@ -118,7 +118,7 @@ class Product(models.Model):
         'user.User', related_name="items", on_delete=models.PROTECT
     )
     title = models.CharField(max_length=255, blank=True)
-    prod_image = models.ImageField(upload_to='images/')
+    prod_image = models.ImageField(upload_to='images/', null=True, blank=True)
     cost = models.DecimalField(max_digits=8, decimal_places=2)
     ai_desc = models.TextField(blank=True)
     fast_notes = models.TextField(blank=True)
@@ -129,7 +129,6 @@ class Product(models.Model):
         max_length=15, choices=UOM_CHOICES, default='each')
     price = models.DecimalField(
         max_digits=6, decimal_places=2, blank=True, null=True)
-
     category = models.ForeignKey(
         "Category", on_delete=models.PROTECT, default=get_default_category)
     brand = models.CharField(max_length=255, blank=True)
@@ -140,6 +139,7 @@ class Product(models.Model):
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default='acquired')
     tags = models.ManyToManyField(Tag, related_name="items", blank=True)
+    sold_date = models.DateTimeField("Sold date", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

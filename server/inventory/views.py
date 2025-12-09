@@ -24,6 +24,21 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductCreateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter]
+
+    # SearchFilter: text search
+    search_fields = ['name', 'status']
+
+    # DjangoFilterBackend: structured filters
+    # Date range, Pricing is not set, Status.
+    filterset_fields = {
+        'created_at': ['exact', 'gte', 'lte'],
+        'sold_date': ['exact', 'gte', 'lte'],
+        'price': ['isnull'],
+        'status': ['exact'],
+    }
+    # allow ordering by date or price
+    ordering_fields = ['created_at', 'price']
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)

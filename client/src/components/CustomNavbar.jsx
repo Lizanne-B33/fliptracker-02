@@ -48,8 +48,8 @@ function CustomNavbar() {
                 </Nav.Link>
 
                 <NavDropdown title="Inventory" id="inventory-nav-dropdown">
-                  <NavDropdown.Item as={NavLink} to="/inventory/list">
-                    View Inventory
+                  <NavDropdown.Item as={NavLink} to="/inventory/product">
+                    Product Inventory
                   </NavDropdown.Item>
                   <NavDropdown.Item as={NavLink} to="/inventory/EditItem">
                     Edit Item

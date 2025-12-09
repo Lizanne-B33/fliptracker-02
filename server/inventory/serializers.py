@@ -72,6 +72,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductCreateUpdateSerializer(serializers.ModelSerializer):
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(),
+        source='category',
+        write_only=True
+    )
+    category = CategorySerializer(read_only=True)
+    prod_image = serializers.ImageField(read_only=True)
+
     class Meta:
         model = Product
         fields = '__all__'

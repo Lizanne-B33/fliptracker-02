@@ -2,7 +2,8 @@
 URL configuration for FlipTrackr application.
 The backend is API only with React functioning as the front end.
 """
-
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import (
@@ -18,8 +19,11 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # App routes
-    # your custom user app
     path('api/user/', include('user.urls', namespace='user')),
-    path('api/inventory/', include('inventory.urls',
-         namespace='inventory')),
+    path('api/inventory/', include('inventory.urls', namespace='inventory')),
 ]
+
+# ✅ Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

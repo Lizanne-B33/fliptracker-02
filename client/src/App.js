@@ -6,12 +6,10 @@ import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ProductFastPage from './pages/inventory/ProductFastPage';
+import ProductPage from './pages/inventory/ProductPage';
 import ProductTypePage from './pages/inventory/ProductTypePage';
 import CategoryPage from './pages/inventory/CategoryPage';
-
-// TODO: import InventoryList from './pages/inventory/InventoryList';
 import User from './pages/auth/User';
-// TODO: import UserSettings from './pages/auth/UserSettings';
 
 function App() {
   return (
@@ -39,7 +37,7 @@ function App() {
               <Route path="fast-add" element={<ProductFastPage />} />
               <Route path="product-type" element={<ProductTypePage />} />
               <Route path="category" element={<CategoryPage />} />
-              {/* TODO: <Route path="list" element={<InventoryList />} /> */}
+              <Route path="product" element={<ProductPage />} />
             </Route>
           </Route>
         </Route>

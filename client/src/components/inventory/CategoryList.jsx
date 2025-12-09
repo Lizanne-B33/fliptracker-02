@@ -1,7 +1,12 @@
 import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
 import ReactPaginate from 'react-paginate';
 
-// Category List
+//=========================================
+// DEFINE THE COMPONENT
+//=========================================
+// Self-contained constructor
+// fetches own data internally. It does not expect props, but
+// wires them up itself.
 function CategoryList({ onSelect }) {
   const {
     items: categories,

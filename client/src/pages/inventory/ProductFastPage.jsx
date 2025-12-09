@@ -1,3 +1,8 @@
+// This page is primarily expected to be used on mobile
+// It is intentionally limited in scope to only the
+// required and helper fields of the product.  It is a simple
+// form for clear ui/ux on mobile.
+
 import React from 'react';
 import ProductFastForm from '../../components/inventory/ProductFastForm';
 
