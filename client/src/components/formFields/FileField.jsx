@@ -11,7 +11,10 @@ const FileField = React.forwardRef(
       <Form.Control
         type="file"
         name={name}
-        onChange={onChange} // <-- forward parent handler
+        onChange={(e) => {
+          console.log('FileField onChange fired', e.target.files[0]);
+          onChange && onChange(e); // <-- forward to parent
+        }}
         ref={ref}
         {...props}
       />

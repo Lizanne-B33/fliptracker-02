@@ -36,9 +36,9 @@ export const submitFormData = async (
     for (const [key, value] of Object.entries(formData)) {
       if (key === 'prod_image') {
         if (value instanceof File) {
-          payload.append(key, value, value.name);
+          payload.append(key, value, value.name); // only append if new file
         }
-        // If not a File, do nothing (existing image stays)
+        // else skip sending prod_image (keep current)
       } else {
         payload.append(key, value);
       }

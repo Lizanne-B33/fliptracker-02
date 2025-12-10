@@ -6,6 +6,8 @@ import TextField from '../formFields/TextField';
 import FileField from '../formFields/FileField';
 import { fetchList } from '../../utils/fetchList';
 import { submitFormData } from '../../utils/submitFormData';
+import { logFormData } from '../../utils/formDebug';
+import { handleFilePreview } from '../../utils/filePreview';
 
 const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
   const fileInputRef = useRef();
@@ -39,6 +41,7 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
 
   // Prefill form for edit
   useEffect(() => {
+    logFormData(formData, product);
     if (!product) {
       setFormData({
         title: '',
@@ -55,13 +58,20 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
       title: product.title || '',
       product_type_id: product.category?.product_type?.id || null,
       category_id: product.category?.id || null,
-      prod_image: null,
+      prod_image: product.prod_image || null,
     });
 
     if (product.prod_image) {
-      const baseURL =
-        process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
-      setPreviewImage(`${baseURL}${product.prod_image}`);
+      let imgURL = product.prod_image;
+
+      // If the string does not start with http/https, prepend baseURL
+      if (!/^https?:\/\//i.test(imgURL)) {
+        const baseURL =
+          process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+        imgURL = `${baseURL}${imgURL}`;
+      }
+
+      setPreviewImage(imgURL);
     }
 
     // Load categories filtered by product type
@@ -111,6 +121,7 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    console.log('Selected file from handle file change:', file);
     setFormData((prev) => ({ ...prev, prod_image: file }));
 
     if (file) {
@@ -177,24 +188,47 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
           />
         </Col>
         <Col md={6} className="mt-3">
-          <FileField
-            ref={fileInputRef}
-            label="Change Image (optional)"
-            name="prod_image"
-            onChange={handleFileChange}
-          />
-          {previewImage && (
-            <div className="mt-2">
-              <p className="text-muted">
-                {formData.prod_image?.name || 'Current image:'}
-              </p>
-              <img
-                src={previewImage}
-                alt="Preview"
-                style={{ maxWidth: '200px', maxHeight: '200px' }}
-              />
-            </div>
-          )}
+          <Col md={6} className="mt-3">
+            <FileField
+              ref={fileInputRef}
+              label="***Use this field to change image only."
+              name="prod_image"
+              onChange={(e) => {
+                // Log the selected file
+                const file = e.target.files[0];
+                console.log('Selected file from FileField:', file);
+
+                if (file) {
+                  // Update formData with File object
+                  setFormData((prev) => ({ ...prev, prod_image: file }));
+
+                  // Generate preview
+                  const reader = new FileReader();
+                  reader.onloadend = () => setPreviewImage(reader.result);
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+
+            {previewImage && (
+              <div className="mt-2">
+                <p className="text-muted">
+                  {formData.prod_image instanceof File
+                    ? formData.prod_image.name
+                    : 'Current image:'}
+                </p>
+                <img
+                  src={previewImage}
+                  alt="Preview"
+                  style={{
+                    maxWidth: '200px',
+                    maxHeight: '200px',
+                    objectFit: 'contain',
+                  }}
+                />
+              </div>
+            )}
+          </Col>
         </Col>
       </Row>
       <Row className="mt-3">
