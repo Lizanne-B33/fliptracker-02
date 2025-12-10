@@ -11,7 +11,7 @@ export const submitFormData = async (
   setError,
   setSuccess,
   refreshList,
-  method = 'POST' // default for create, edit will pass in the PUT.
+  method = 'POST' // default for create, edit will pass in PATCH or PUT
 ) => {
   // 1: Sets the user interface state.
   setLoading(true);
@@ -40,20 +40,27 @@ export const submitFormData = async (
 
     console.log('Payload entries after append:', [...payload.entries()]);
 
-    // 4: Sends payload to backend (Django )
+    // 4: Sends payload to backend (Django)
     // Axios sends the FormData with correct headers, DRF sees the FK Ids.
     let response;
-    if (method === 'PUT') {
+    const httpMethod = method.toUpperCase();
+
+    if (httpMethod === 'PATCH') {
+      response = await axiosInstance.patch(endpoint, payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    } else if (httpMethod === 'PUT') {
       response = await axiosInstance.put(endpoint, payload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     } else {
+      // default POST
       response = await axiosInstance.post(endpoint, payload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     }
 
-    // 5. Handle success and or errors.
+    // 5: Handle success and or errors.
     console.log('Saved:', response.data);
     setSuccess(true);
     resetForm();
@@ -70,9 +77,8 @@ export const submitFormData = async (
     } else {
       setError({ non_field_errors: ['Failed to save product.'] });
     }
-
-    // 6: Cleanup. (spinner stops)
   } finally {
+    // 6: Cleanup. (spinner stops)
     setLoading(false);
   }
 };

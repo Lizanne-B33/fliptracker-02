@@ -30,6 +30,7 @@ export const usePaginatedFetch = (baseUrl, pageSize = 10) => {
   };
 
   useEffect(() => {
+    console.log('ProductList mounted, items:', items);
     setCurrentPage(1);
     fetchPage(1);
   }, [baseUrl]);

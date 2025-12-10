@@ -12,6 +12,7 @@ const TextField = ({
   value,
   onChange,
   placeholder,
+  readOnly = false,
   error, //accept error prop
   ...props
 }) => (
@@ -22,6 +23,7 @@ const TextField = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      readOnly={readOnly}
       isInvalid={!!error} // mark invalid if error exists
       {...props}
     />
