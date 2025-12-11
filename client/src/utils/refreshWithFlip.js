@@ -1,12 +1,10 @@
 // utils/refreshWithFlip.js
 export const refreshWithFlip = async (fetchPage, currentPage, pageCount) => {
-  if (pageCount > 1) {
-    const neighbor =
-      currentPage < pageCount ? currentPage + 1 : currentPage - 1;
-    await fetchPage(neighbor);
-    await fetchPage(currentPage);
-  } else {
-    await fetchPage(1);
-    await fetchPage(currentPage);
-  }
+  const safePage =
+    Number.isInteger(currentPage) && currentPage > 0 ? currentPage : 1;
+  const neighbor =
+    safePage < pageCount ? safePage + 1 : Math.max(safePage - 1, 1);
+
+  await fetchPage(`/api/inventory/product/?page=${neighbor}`);
+  await fetchPage(`/api/inventory/product/?page=${safePage}`);
 };

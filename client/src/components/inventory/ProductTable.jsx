@@ -1,5 +1,6 @@
 import React from 'react';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { axiosInstance } from '../../api/apiConfig';
 
 import {
   useReactTable,
@@ -15,20 +16,10 @@ const ProductTable = ({ items = [], onSelect, fetchPage, currentPageUrl }) => {
 
   const handleRemove = async (product) => {
     try {
-      const response = await fetch(`/api/inventory/product/${product.id}/`, {
-        method: 'PATCH', // or PUT depending on your API
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'removed' }),
+      await axiosInstance.patch(`/api/inventory/product/${product.id}/`, {
+        status: 'removed',
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to update status');
-      }
-
-      // ✅ Refresh the table data after update
-      await fetchPage(currentPageUrl);
+      await fetchPage(currentPageUrl); // refresh table
     } catch (err) {
       console.error(err);
       alert('Error removing product');

@@ -1,7 +1,7 @@
 // src/pages/inventory/ProductPage.jsx
 import { useState } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import ProductList from '../../components/inventory/ProductList';
+import ProductTable from '../../components/inventory/ProductTable';
 import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
 import { refreshWithFlip } from '../../utils/refreshWithFlip';
 import ProductForm from '../../components/inventory/ProductForm';
@@ -43,8 +43,12 @@ const ProductPage = () => {
                 />
               ) : (
                 <>
-                  {/* Product list */}
-                  <ProductList items={products} onSelect={setSelectedProduct} />
+                  {/* Product Table */}
+                  <ProductTable
+                    items={products}
+                    fetchPage={fetchPage}
+                    onSelect={setSelectedProduct}
+                  />
 
                   {/* Pagination buttons */}
                   <div className="pagination-buttons mt-3 d-flex align-items-center justify-content-center">

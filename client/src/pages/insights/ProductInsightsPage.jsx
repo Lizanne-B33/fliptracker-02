@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import ProductCards from '../../components/insights/ProductCards';
-import ProductTable from '../../components/insights/ProductTable';
+import ProductTable from '../../components/inventory/ProductTable';
 import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
 import { refreshWithFlip } from '../../utils/refreshWithFlip';
 
