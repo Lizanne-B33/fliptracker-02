@@ -51,17 +51,15 @@ function CustomNavbar() {
                   <NavDropdown.Item as={NavLink} to="/inventory/product">
                     Product Inventory
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={NavLink} to="/inventory/EditItem">
-                    Edit Item
-                  </NavDropdown.Item>
-                  <NavDropdown.Item as={NavLink} to="/inventory/Fulladd">
-                    Add Item
+
+                  <NavDropdown.Item as={NavLink} to="/products/new">
+                    Add New Product
                   </NavDropdown.Item>
                 </NavDropdown>
 
                 <NavDropdown title="Insights" id="insights-nav-dropdown">
-                  <NavDropdown.Item as={NavLink} to="/insights/reports">
-                    Reports
+                  <NavDropdown.Item as={NavLink} to="/insights/product-cards">
+                    ProductCards
                   </NavDropdown.Item>
                   <NavDropdown.Item as={NavLink} to="/insights/trends">
                     Trends

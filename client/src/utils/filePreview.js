@@ -37,3 +37,5 @@ export const handleFilePreview = (
   reader.onloadend = () => setPreviewImage(reader.result);
   reader.readAsDataURL(file);
 };
+
+export default handleFilePreview;

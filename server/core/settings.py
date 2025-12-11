@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'import_export',
 
     # Modules
@@ -126,7 +127,8 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 16,
 
     'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend']
+        'django_filters.rest_framework.DjangoFilterBackend', 'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',]
 }
 
 AUTH_USER_MODEL = 'user.User'

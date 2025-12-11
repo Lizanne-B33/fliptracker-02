@@ -2,14 +2,19 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import PersistLogin from './components/PersistLogin';
 import AuthMiddleware from './middlewares/AuthMiddleware';
 import CustomNavbar from './components/CustomNavbar';
+
+// Pages
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import User from './pages/auth/User';
 import ProductFastPage from './pages/inventory/ProductFastPage';
 import ProductPage from './pages/inventory/ProductPage';
 import ProductTypePage from './pages/inventory/ProductTypePage';
 import CategoryPage from './pages/inventory/CategoryPage';
-import User from './pages/auth/User';
+import ProductInsightsPage from './pages/insights/ProductInsightsPage';
+import ProductForm from './components/inventory/ProductForm';
+import ProductAddPage from './pages/inventory/ProductAddPage';
 
 function App() {
   return (
@@ -29,10 +34,14 @@ function App() {
             {/* User section */}
             <Route path="/user" element={<Outlet />}>
               <Route index element={<User />} />
-              {/* add more user routes here */}
+              {/* Add more user routes here if needed */}
             </Route>
 
-            {/* Inventory section */}
+            {/* Product Add/Edit top-level routes */}
+            <Route path="/products/new" element={<ProductAddPage />} />
+            <Route path="/products/edit/:id" element={<ProductForm />} />
+
+            {/* Inventory section (nested routes) */}
             <Route path="/inventory" element={<Outlet />}>
               <Route path="fast-add" element={<ProductFastPage />} />
               <Route path="product-type" element={<ProductTypePage />} />
@@ -41,6 +50,12 @@ function App() {
             </Route>
           </Route>
         </Route>
+
+        {/* Insights section (top-level) */}
+        <Route
+          path="/insights/product-cards"
+          element={<ProductInsightsPage />}
+        />
 
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
