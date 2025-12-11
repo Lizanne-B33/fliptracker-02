@@ -1,38 +1,35 @@
-// src/components/inventory/ProductList.jsx
-import React from 'react';
+// ProductList.js
+import { Container, Row, Col, Image } from 'react-bootstrap';
+import { formatCurrency } from '../../utils/formatCurrency';
 
-const ProductList = ({ items, onSelect }) => {
-  if (!items || items.length === 0) {
-    return <p>No products found.</p>;
-  }
-
+function ProductList({ items, onSelect }) {
   return (
-    <table className="table table-striped">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Price</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {items.map((product) => (
-          <tr key={product.id}>
-            <td>{product.title}</td>
-            <td>${product.price}</td>
-            <td>
-              <button
-                className="btn btn-primary btn-sm"
-                onClick={() => onSelect(product)}
-              >
-                Edit
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <Container className="section ft-list">
+      {items.map((prod) => (
+        <Row key={prod.id} className="align-items-center mb-3">
+          <Col xs={2}>
+            <Image
+              src={prod.prod_image}
+              alt={prod.title}
+              thumbnail
+              className="thumbnail"
+            />
+          </Col>
+          <Col xs={4} className="text-start">
+            <h6 className="product-link" onClick={() => onSelect(prod)}>
+              {prod.title}
+            </h6>
+          </Col>
+          <Col xs={2}>
+            <p>{formatCurrency(prod.price)}</p>
+          </Col>
+          <Col xs={2}>
+            <p>{prod.status}</p>
+          </Col>
+        </Row>
+      ))}
+    </Container>
   );
-};
+}
 
 export default ProductList;

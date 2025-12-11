@@ -134,6 +134,23 @@ a:hover {
   background-color: #7c7664;
 }
 
+.product-link {
+  cursor: pointer;
+  color: #1b2024; /* optional: make it look like a link */
+  font-weight: 500;
+}
+
+.product-link:hover {
+  text-decoration: underline; /* optional hover effect */
+}
+
+.form-label {
+  text-align: left !important;
+  display: block; /* ensures alignment applies */
+  margin-bottom: -5px;
+  margin-top: 5px;
+}
+
 /* ===============================
    CARDS & CONTAINERS
    =============================== */

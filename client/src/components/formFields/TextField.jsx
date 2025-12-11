@@ -8,8 +8,9 @@ import { Form } from 'react-bootstrap';
 
 const TextField = ({
   type = 'text',
+  label,
   name,
-  value,
+  value = '',
   onChange,
   placeholder,
   readOnly = false,
@@ -17,6 +18,7 @@ const TextField = ({
   ...props
 }) => (
   <Form.Group className="mb-3" controlId={name}>
+    <Form.Label>{label}</Form.Label>
     <Form.Control
       type={type}
       name={name}

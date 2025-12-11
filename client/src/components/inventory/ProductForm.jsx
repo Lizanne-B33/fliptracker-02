@@ -252,18 +252,9 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
             />
           </Form.Group>
         </Col>
-        <Col md={6}>
-          <FileField
-            ref={fileInputRef}
-            label="Replace Image"
-            name="prod_image"
-            onChange={handleFileChange}
-          />
+        <Col md={4}>
           {previewImage && (
             <div className="mt-2">
-              <p className="text-muted">
-                {selectedFile ? selectedFile.name : 'Current image:'}
-              </p>
               <img
                 src={previewImage}
                 alt="Preview"
@@ -276,6 +267,16 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
               />
             </div>
           )}
+        </Col>
+        <Col md={2}>
+          <p className="text-muted">
+            Please use this field if you want to change the image.
+          </p>
+          <FileField
+            ref={fileInputRef}
+            name="prod_image"
+            onChange={handleFileChange}
+          />
         </Col>
       </Row>
 
@@ -395,6 +396,39 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
             onChange={handleChange}
             placeholder="Optional notes"
             error={getFieldError(error, 'fast_notes')}
+          />
+        </Col>
+      </Row>
+      {/* More Information */}
+      <Row className="ft-section-header">
+        <h4>More Information</h4>
+      </Row>
+      <Row>
+        <Col md={4}>
+          <TextField
+            label="Brand"
+            name="brand"
+            value={formData.brand}
+            onChange={handleChange}
+            placeholder="Enter Brand if known."
+          />
+        </Col>
+        <Col md={4}>
+          <TextField
+            label="Color(s)"
+            name="color"
+            value={formData.color}
+            onChange={handleChange}
+            placeholder="Enter primary color(s)"
+          />
+        </Col>
+        <Col md={4}>
+          <TextField
+            label="Size"
+            name="size"
+            value={formData.size}
+            onChange={handleChange}
+            placeholder="Enter size"
           />
         </Col>
       </Row>

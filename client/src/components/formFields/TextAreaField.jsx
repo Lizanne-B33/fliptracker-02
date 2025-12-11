@@ -9,6 +9,7 @@ import { Form } from 'react-bootstrap';
 const TextAreaField = ({
   type = 'textarea',
   name,
+  label,
   value,
   onChange,
   placeholder,
@@ -16,8 +17,10 @@ const TextAreaField = ({
   ...props
 }) => (
   <Form.Group className="mb-3" controlId={name}>
+    <Form.Label>{label}</Form.Label>
     <Form.Control
       type={type}
+      label={label}
       name={name}
       value={value}
       onChange={onChange}
