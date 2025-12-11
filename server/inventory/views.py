@@ -46,6 +46,10 @@ class ProductViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    # excludes removed in most cases
+    def get_queryset(self):
+        return Product.objects.exclude(status='removed')
+
 
 class ProductFastEntryViewSet(viewsets.ModelViewSet):
     """
