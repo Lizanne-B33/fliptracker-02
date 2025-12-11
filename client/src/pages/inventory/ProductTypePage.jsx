@@ -25,11 +25,9 @@ const ProductTypePage = () => {
   // Defines the refresh logic
   // calls utility to flip the page in order to seamlessly update the values in the list.
   const handleRefresh = async () => {
-    await refreshWithFlip(
-      fetchProductTypePage,
-      currentProductTypePage,
-      productTypePageCount
-    );
+    console.log('Refreshing...');
+    await fetchProductTypePage(currentProductTypePage);
+    console.log('Items after refresh:', productTypes);
     setSelected(null);
   };
 

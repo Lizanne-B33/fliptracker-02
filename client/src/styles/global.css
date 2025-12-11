@@ -151,6 +151,14 @@ a:hover {
   margin-top: 5px;
 }
 
+th {
+  transition: color 0.2s ease;
+}
+
+th:hover {
+  color: var(--accent-subtle);
+}
+
 /* ===============================
    CARDS & CONTAINERS
    =============================== */

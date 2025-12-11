@@ -18,37 +18,36 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows products to be viewed, created or edited.
-    """
     queryset = Product.objects.all()
     serializer_class = ProductCreateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [filters.SearchFilter, filters.SearchFilter,
+    filter_backends = [filters.SearchFilter,
                        DjangoFilterBackend,
-                       filters.OrderingFilter,]
+                       filters.OrderingFilter]
 
-    # SearchFilter: text search
     search_fields = ['title', 'status']
-
-    # DjangoFilterBackend: structured filters
-    # Date range, Pricing is not set, Status.
     filterset_fields = {
         'created_at': ['exact', 'gte', 'lte'],
         'sold_date': ['exact', 'gte', 'lte'],
         'price': ['isnull'],
         'status': ['exact'],
     }
-    # allow ordering by date or price
-    ordering_fields = ['created_at', 'price']
-    ordering = ['-created_at']  # default order
+    ordering_fields = ['created_at', 'price', 'title']
+    ordering = ['-created_at']
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
-    # excludes removed in most cases
     def get_queryset(self):
-        return Product.objects.exclude(status='removed')
+        qs = Product.objects.all()
+        status = self.request.query_params.get('status')
+        if status == 'removed':
+            return qs.filter(status='removed')
+        return qs.exclude(status='removed')
+
+    def get_object(self):
+        # Always allow lookup by pk, even if status=removed
+        return Product.objects.get(pk=self.kwargs['pk'])
 
 
 class ProductFastEntryViewSet(viewsets.ModelViewSet):
