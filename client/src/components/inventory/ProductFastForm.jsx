@@ -1,10 +1,9 @@
 // FastCreateForm.jsx
-// https://paperform.co/tools/free-react-form-creator/
-// Refactored to use React-Bootstrap -- modified as needed during debug.
+// Refactored for React-Bootstrap with JWT authentication
+// Handles Product Type → Category dependency and image uploads
 
 import React, { useEffect, useRef } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
-import { axiosInstance } from '../../api/apiConfig';
 import { submitFormData } from '../../utils/submitFormData.js';
 import { useFormState } from '../../hooks/useFormState';
 import TextField from '../../components/formFields/TextField';
@@ -15,9 +14,12 @@ import NumberField from '../../components/formFields/NumberField.jsx';
 import FileField from '../../components/formFields/FileField.jsx';
 import { getFieldError } from '../../utils/errorHelpers';
 import { formatCurrency } from '../../utils/formatCurrency.js';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 const ProductFastForm = ({ item, onSaved, endpoint }) => {
   const fileInputRef = useRef(null);
+  const axiosPrivate = useAxiosPrivate();
+
   //================================================
   // INITIAL STATE
   //================================================
@@ -38,8 +40,8 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
     qty_unit: 'each',
     purch_qty: 1,
     price: '',
-    product_type_id: '',
-    category_id: '',
+    product_type_id: null,
+    category_id: null,
     condition: 'undefined',
     status: 'acquired',
     ai_desc: '',
@@ -47,7 +49,9 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
     commit: 'choose...',
   });
 
-  // Prefill when editing
+  //================================================
+  // PREFILL WHEN EDITING
+  //================================================
   useEffect(() => {
     if (item) {
       setFormData({
@@ -57,8 +61,12 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
         cost: item.cost != null ? Number(item.cost) : '',
         purch_qty: item.purch_qty,
         qty_unit: item.qty_unit,
-        product_type_id: item.product_type?.id ?? '',
-        category_id: item.category?.id ?? '',
+        product_type_id: item.product_type
+          ? { value: item.product_type.id, label: item.product_type.name }
+          : null,
+        category_id: item.category
+          ? { value: item.category.id, label: item.category.name }
+          : null,
         condition: item.condition,
         status: item.status,
         ai_desc: item.ai_desc,
@@ -79,6 +87,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
       ...prev,
       [name]: name === 'category_id' ? parseInt(value, 10) : value,
     }));
+
     if (name === 'commit' && value === 'reset') {
       resetForm();
     }
@@ -90,7 +99,6 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Build FormData once
     const payload = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (value === null || value === '') return;
@@ -108,7 +116,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
     try {
       if (item) {
         // Update existing product
-        await axiosInstance.put(
+        await axiosPrivate.put(
           `/api/inventory/product_fast/${item.id}/`,
           payload,
           { headers: { 'Content-Type': 'multipart/form-data' } }
@@ -124,14 +132,13 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           setSuccess,
           onSaved,
           'POST',
-          true // tells submitFormData this is FormData
+          true
         );
       }
 
-      // reset form for both POST and PUT
+      // reset form after save
       resetForm();
 
-      // Clear file input after successful submit
       if (fileInputRef.current) fileInputRef.current.value = '';
       setFormData((prev) => ({ ...prev, prod_image: null }));
 
@@ -140,6 +147,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
       setError(err);
     }
   };
+
   //================================================
   // BUSINESS LOGIC HELPERS
   //================================================
@@ -168,34 +176,24 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
   };
 
   //================================================
-  // RENDERING
+  // PRODUCT TYPE / CATEGORY FIELDS
   //================================================
-  return (
-    <Form className="container mt-3 mb-3" onSubmit={handleSubmit}>
-      <Row className="mb-3">
-        <TextField
-          label="Product Title"
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          placeholder="enter title here."
-          required
-          maxLength={255}
-          error={getFieldError(error, 'title')}
-        />
+  const ProductTypeCategoryFields = ({ formData, setFormData, error }) => {
+    return (
+      <>
         <AsyncSelectField
           label="Product Type"
           name="product_type_id"
-          value={formData.product_type_id} // now stores { value, label }
+          value={formData.product_type_id}
           onChange={(selected) =>
             setFormData((prev) => ({
               ...prev,
-              product_type_id: selected, // store full object
+              product_type_id: selected,
+              category_id: null, // reset category when type changes
             }))
           }
           loadOptions={(inputValue) =>
-            axiosInstance
+            axiosPrivate
               .get('/api/inventory/product_type/', {
                 params: { search: inputValue },
               })
@@ -206,30 +204,22 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           }
           placeholder="Select a Product Type"
           required
-          error={getFieldError(error, 'product_type_id')}
+          error={error?.product_type_id}
         />
+
         <AsyncSelectField
           label="Category"
           name="category_id"
-          value={formData.category_id} // {value,label} object
+          value={formData.category_id}
           onChange={(selected) =>
-            setFormData((prev) => ({
-              ...prev,
-              category_id: selected, // store full object
-            }))
+            setFormData((prev) => ({ ...prev, category_id: selected }))
           }
           loadOptions={(inputValue) => {
-            console.log(
-              'Selected product type id:',
-              formData.product_type_id?.value
-            );
-            // If no product type selected, return empty array
             if (!formData.product_type_id?.value) return Promise.resolve([]);
-
-            return axiosInstance
+            return axiosPrivate
               .get('/api/inventory/category/', {
                 params: {
-                  product_type: formData.product_type_id.value, // filter by type
+                  product_type: formData.product_type_id.value,
                   search: inputValue,
                 },
               })
@@ -240,17 +230,47 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           }}
           placeholder="Select a Category"
           required
+          error={error?.category_id}
         />
+      </>
+    );
+  };
+
+  //================================================
+  // RENDER FORM
+  //================================================
+  return (
+    <Form className="container mt-3 mb-3" onSubmit={handleSubmit}>
+      <Row className="mb-3">
+        <TextField
+          label="Product Title"
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          placeholder="Enter title here."
+          required
+          maxLength={255}
+          error={getFieldError(error, 'title')}
+        />
+
+        <ProductTypeCategoryFields
+          formData={formData}
+          setFormData={setFormData}
+          error={getFieldError(error)}
+        />
+
         <NumberField
           label="Cost"
           type="number"
           name="cost"
-          value={formData.cost ?? ''} // never undefined
+          value={formData.cost ?? ''}
           onChange={handleChange}
           placeholder="Purchase Price"
           required
           min={0}
         />
+
         <NumberField
           label="Quantity"
           type="number"
@@ -261,6 +281,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           required
           min={0}
         />
+
         <SelectField
           label="Quantity Unit"
           name="qty_unit"
@@ -272,6 +293,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           <option value="pair">Pair</option>
           <option value="set">Set</option>
         </SelectField>
+
         <SelectField
           label="Condition"
           name="condition"
@@ -286,6 +308,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           <option value="used_very_good">Used Very Good</option>
           <option value="used_good">Used Good</option>
         </SelectField>
+
         <FileField
           ref={fileInputRef}
           label="Product Image"
@@ -296,6 +319,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           }
           required
         />
+
         <TextAreaField
           label="AI Description (Optional)"
           type="textarea"
@@ -305,15 +329,17 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           placeholder="Enter information copied from AI or other source"
           error={getFieldError(error, 'ai_desc')}
         />
+
         <TextAreaField
           label="Fast Notes (Optional)"
           type="textarea"
           name="fast_notes"
           value={formData.fast_notes}
           onChange={handleChange}
-          placeholder="Enter your own notes. "
+          placeholder="Enter your own notes."
           error={getFieldError(error, 'fast_notes')}
         />
+
         <SelectField
           label="Commit Item?"
           name="commit"
@@ -330,6 +356,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           </option>
         </SelectField>
       </Row>
+
       <Row
         className="ft-proposedPrice"
         style={{ display: formData.cost !== '' ? 'block' : 'none' }}
@@ -347,6 +374,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           {formatCurrency(calculateTotalProfit())}.
         </p>
       </Row>
+
       <Button
         id="submitBtn"
         type="submit"
@@ -354,6 +382,7 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
       >
         {loading ? 'Saving...' : item ? 'Update' : 'Create'}
       </Button>
+
       {success && <p style={{ color: 'green' }}>Saved successfully!</p>}
     </Form>
   );
