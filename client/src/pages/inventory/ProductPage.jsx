@@ -1,4 +1,4 @@
-// ProductPage.js
+// src/pages/inventory/ProductPage.jsx
 import { useState } from 'react';
 import ProductList from '../../components/inventory/ProductList';
 import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
@@ -6,25 +6,23 @@ import { refreshWithFlip } from '../../utils/refreshWithFlip';
 import ProductForm from '../../components/inventory/ProductForm';
 
 const ProductPage = () => {
-  // Track the selected product object, not just its ID
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // Pagination hook
   const {
     items: products,
-    pageCount: productsPageCount,
-    fetchPage: fetchProductPage,
-    currentPage: currentProductPage,
+    nextPageUrl,
+    prevPageUrl,
+    fetchPage,
+    currentPage,
+    totalPages,
   } = usePaginatedFetch('/api/inventory/product/');
 
   // Refresh logic after saving
   const handleRefresh = async () => {
-    await refreshWithFlip(
-      fetchProductPage,
-      currentProductPage,
-      productsPageCount
-    );
-    setSelectedProduct(null); // clear form
+    console.log('Refreshing current page...');
+    await refreshWithFlip(fetchPage, null, null);
+    setSelectedProduct(null);
   };
 
   return (
@@ -43,18 +41,39 @@ const ProductPage = () => {
 
             {selectedProduct ? (
               <ProductForm
-                product={selectedProduct} // pass full product object
+                product={selectedProduct}
                 endpoint="/api/inventory/product/"
                 onSaved={handleRefresh}
                 onCancel={() => setSelectedProduct(null)}
               />
             ) : (
-              <ProductList
-                items={products}
-                pageCount={productsPageCount}
-                fetchPage={fetchProductPage}
-                onSelect={(item) => setSelectedProduct(item)} // store full product object
-              />
+              <>
+                {/* Product list */}
+                <ProductList items={products} onSelect={setSelectedProduct} />
+
+                {/* Pagination buttons */}
+                <div className="pagination-buttons mt-3">
+                  <button
+                    className="btn btn-secondary me-2"
+                    disabled={!prevPageUrl}
+                    onClick={() => fetchPage(prevPageUrl)}
+                  >
+                    Previous
+                  </button>
+
+                  <span className="mx-2">
+                    Page {currentPage} of {totalPages}
+                  </span>
+
+                  <button
+                    className="btn btn-secondary"
+                    disabled={!nextPageUrl}
+                    onClick={() => fetchPage(nextPageUrl)}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
             )}
           </div>
         </div>

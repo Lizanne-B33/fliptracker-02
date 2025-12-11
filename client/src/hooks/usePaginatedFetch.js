@@ -7,37 +7,57 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchList } from '../utils/fetchList';
 
-export const usePaginatedFetch = (baseUrl, pageSize = 10) => {
+export const usePaginatedFetch = (baseUrl) => {
   const [items, setItems] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
+  const [nextPageUrl, setNextPageUrl] = useState(null);
+  const [prevPageUrl, setPrevPageUrl] = useState(null);
+  const [currentPageUrl, setCurrentPageUrl] = useState(baseUrl);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Wrap fetchPage in useCallback so it is stable and can be safely used in useEffect
   const fetchPage = useCallback(
-    async (page = 1) => {
+    async (url) => {
       try {
-        const res = await fetchList(`${baseUrl}?page=${page}`);
-        const nextItems = Array.isArray(res?.results) ? res.results : [];
-        setItems(nextItems);
+        const res = await fetchList(url || baseUrl);
 
-        if (typeof res?.count === 'number') {
-          setPageCount(Math.ceil(res.count / pageSize));
+        setItems(Array.isArray(res?.results) ? res.results : []);
+        setNextPageUrl(res?.next || null);
+        setPrevPageUrl(res?.previous || null);
+        setCurrentPageUrl(url || baseUrl);
+
+        // compute current page based on URL query param
+        const urlObj = new URL(url || baseUrl, window.location.origin);
+        const pageParam = urlObj.searchParams.get('page') || '1';
+        setCurrentPage(parseInt(pageParam, 10));
+
+        // compute total pages
+        const pageSize = res?.results?.length || 1;
+        if (res?.count) {
+          setTotalPages(Math.ceil(res.count / pageSize));
         }
-        setCurrentPage(page);
       } catch (err) {
         console.error('Pagination fetch error:', err);
         setItems([]);
-        setPageCount(0);
+        setNextPageUrl(null);
+        setPrevPageUrl(null);
+        setCurrentPage(1);
+        setTotalPages(1);
       }
     },
-    [baseUrl, pageSize] // dependencies
+    [baseUrl]
   );
 
-  // Fetch first page whenever baseUrl changes
   useEffect(() => {
-    setCurrentPage(1);
-    fetchPage(1);
-  }, [baseUrl, fetchPage]); // include fetchPage to satisfy ESLint
+    fetchPage(baseUrl);
+  }, [baseUrl, fetchPage]);
 
-  return { items, pageCount, fetchPage, currentPage };
+  return {
+    items,
+    nextPageUrl,
+    prevPageUrl,
+    currentPageUrl,
+    currentPage,
+    totalPages,
+    fetchPage,
+  };
 };

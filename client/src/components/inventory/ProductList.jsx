@@ -1,55 +1,38 @@
-// ProductList.js
-import ReactPaginate from 'react-paginate';
+// src/components/inventory/ProductList.jsx
+import React from 'react';
 
-//=========================================
-// DEFINE THE COMPONENT
-//=========================================
-// items: current page of items (array of objects)
-// pageCount: total pages (calc by hook)
-// fetchPage: loads specific page from API
-// onSelect: callback to tell parent which item was clicked (editing.)
+const ProductList = ({ items, onSelect }) => {
+  if (!items || items.length === 0) {
+    return <p>No products found.</p>;
+  }
 
-function ProductList({ items, pageCount, fetchPage, onSelect }) {
-  console.log('ProductList items:', items); // debugging
-
-  //=========================================
-  // RENDERING THE LIST & PAGINATION CONTROLS
-  //==========================================
   return (
-    <>
-      <div className="section ft-list">
-        {items.map((prod) => (
-          <div className="row" key={prod.id}>
-            <div className="col-2">
-              <img
-                src={prod.prod_image} // serializer should expose product.image.url
-                alt={prod.title}
-                className="thumbnail"
-              />
-            </div>
-            <div className="col-6 text-start">
-              <h6 onClick={() => onSelect(prod)}>{prod.title}</h6>
-            </div>
-            <div className="col-2">
-              <p> {prod.status} </p>
-            </div>
-          </div>
+    <table className="table table-striped">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((product) => (
+          <tr key={product.id}>
+            <td>{product.title}</td>
+            <td>${product.price}</td>
+            <td>
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() => onSelect(product)}
+              >
+                Edit
+              </button>
+            </td>
+          </tr>
         ))}
-      </div>
-
-      <ReactPaginate
-        previousLabel={'← Previous'}
-        nextLabel={'Next →'}
-        breakLabel={'...'}
-        pageCount={pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={5}
-        onPageChange={(selected) => fetchPage(selected.selected + 1)}
-        containerClassName={'pagination'}
-        activeClassName={'active'}
-      />
-    </>
+      </tbody>
+    </table>
   );
-}
+};
 
 export default ProductList;
