@@ -90,42 +90,49 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Build FormData once
     const payload = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null && value !== '') {
-        if (key === 'product_type_id' || key === 'category_id') {
-          payload.append(key, value?.value ?? '');
-        } else {
-          payload.append(key, value);
-        }
+      if (value === null || value === '') return;
+
+      // unwrap {value,label} from AsyncSelectField
+      if (key === 'product_type_id' || key === 'category_id') {
+        payload.append(key, value?.value ?? '');
+      } else if (key === 'prod_image' && value instanceof File) {
+        payload.append('prod_image', value);
+      } else {
+        payload.append(key, value);
       }
     });
 
     try {
       if (item) {
+        // Update existing product
         await axiosInstance.put(
           `/api/inventory/product_fast/${item.id}/`,
-          payload
+          payload,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
         );
       } else {
+        // Create new product
         await submitFormData(
           endpoint,
-          {
-            ...formData,
-            product_type_id: formData.product_type_id?.value ?? null,
-            category_id: formData.category_id?.value ?? null,
-          },
+          payload,
           resetForm,
           setLoading,
           setError,
-          setSuccess
+          setSuccess,
+          onSaved,
+          'POST',
+          true // tells submitFormData this is FormData
         );
       }
 
-      // clear file input after successful submit
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      // reset form for both POST and PUT
+      resetForm();
+
+      // Clear file input after successful submit
+      if (fileInputRef.current) fileInputRef.current.value = '';
       setFormData((prev) => ({ ...prev, prod_image: null }));
 
       if (onSaved) onSaved();
@@ -204,30 +211,33 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
         <AsyncSelectField
           label="Category"
           name="category_id"
-          value={formData.category_id} // now stores { value, label }
+          value={formData.category_id} // {value,label} object
           onChange={(selected) =>
             setFormData((prev) => ({
               ...prev,
               category_id: selected, // store full object
             }))
           }
-          loadOptions={(inputValue) =>
-            axiosInstance
+          loadOptions={(inputValue) => {
+            console.log(
+              'Selected product type id:',
+              formData.product_type_id?.value
+            );
+            // If no product type selected, return empty array
+            if (!formData.product_type_id?.value) return Promise.resolve([]);
+
+            return axiosInstance
               .get('/api/inventory/category/', {
                 params: {
-                  product_type: formData.product_type_id?.value, // use ID from object
+                  product_type: formData.product_type_id.value, // filter by type
                   search: inputValue,
                 },
               })
               .then((res) => {
                 const items = res.data.results ?? res.data;
                 return items.map((c) => ({ value: c.id, label: c.name }));
-              })
-          }
-          error={
-            getFieldError(error, 'category_id') ||
-            (error?.non_field_errors?.[0] ?? null)
-          }
+              });
+          }}
           placeholder="Select a Category"
           required
         />
