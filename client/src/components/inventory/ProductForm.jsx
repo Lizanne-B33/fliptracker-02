@@ -54,22 +54,35 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
       .catch((err) => console.error('Error fetching product types:', err));
   }, []);
 
-  // Prefill form when editing
   useEffect(() => {
     if (!product) {
       setFormData(emptyForm);
       setPreviewImage(null);
       setSelectedFile(null);
       setCategoryOptions([]);
+      setProductTypeOptions([]);
       return;
     }
 
+    // Set product_type and category as full objects { value, label }
+    const productType = product.category?.product_type
+      ? {
+          value: product.category.product_type.id,
+          label: product.category.product_type.name,
+        }
+      : null;
+
+    const category = product.category
+      ? { value: product.category.id, label: product.category.name }
+      : null;
+
     setFormData({
       title: product.title || '',
-      category_id: product.category?.id || null,
+      product_type_id: productType,
+      category_id: category,
       status: product.status || '',
-      purch_qty: product.purch_qty || '',
-      qty_unit: product.qty_unit || '',
+      purch_qty: product.purch_qty || 1,
+      qty_unit: product.qty_unit || 'each',
       cost: product.cost || '',
       condition: product.condition || 'undefined',
       price: product.price || '',
@@ -82,31 +95,31 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
     setPreviewImage(getProductImageURL(product.prod_image));
     setSelectedFile(null);
 
-    if (product.category?.product_type?.id) {
-      fetchList(
-        `/api/inventory/category/?product_type=${product.category.product_type.id}`
-      )
+    // Fetch categories for this product type
+    if (productType) {
+      fetchList(`/api/inventory/category/?product_type=${productType.value}`)
         .then((data) =>
           setCategoryOptions(
             data.results.map((c) => ({ value: c.id, label: c.name }))
           )
         )
-        .catch((err) => console.error('Error fetching categories:', err));
+        .catch(console.error);
     }
   }, [product]);
-
   // Handle simple input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCategoryChange = (selected) => {
-    setFormData((prev) => ({ ...prev, category_id: selected?.value || null }));
-  };
-
+  // Handle FK input changes
   const handleProductTypeChange = (selected) => {
-    setFormData((prev) => ({ ...prev, category_id: null }));
+    setFormData((prev) => ({
+      ...prev,
+      product_type_id: selected, // full object
+      category_id: null, // reset category
+    }));
+
     if (selected) {
       fetchList(`/api/inventory/category/?product_type=${selected.value}`)
         .then((data) =>
@@ -114,10 +127,18 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
             data.results.map((c) => ({ value: c.id, label: c.name }))
           )
         )
-        .catch((err) => console.error('Error fetching categories:', err));
+        .catch(console.error);
     } else {
       setCategoryOptions([]);
     }
+  };
+
+  // Category change: just update formData
+  const handleCategoryChange = (selected) => {
+    setFormData((prev) => ({
+      ...prev,
+      category_id: selected, // full object
+    }));
   };
 
   const handleFileChange = (e) => {
@@ -150,42 +171,50 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
     e.preventDefault();
     setLoading(true);
 
-    const submitData = new FormData();
+    try {
+      const submitData = new FormData();
 
-    // Only append a real file
-    if (selectedFile) submitData.append('prod_image', selectedFile);
+      // Append file if selected
+      if (selectedFile) submitData.append('prod_image', selectedFile);
 
-    // Append other fields
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key === 'category_id') submitData.append('category', value);
-      else if (key !== 'prod_image' && value != null)
-        submitData.append(key, value);
-    });
+      // Append other fields
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'category_id') {
+          // Only send the category ID
+          submitData.append('category_id', value?.value ?? value);
+        }
+        // Skip product_type_id entirely
+        else if (key !== 'prod_image' && key !== 'product_type_id') {
+          submitData.append(key, value ?? '');
+        }
+      });
 
-    console.log('Payload entries:', [...submitData.entries()]); // Debug
+      console.log('Submitting FormData:', [...submitData.entries()]);
 
-    const method = product ? 'PATCH' : 'POST';
-    const safeEndpoint = endpoint || '/api/inventory/product/';
-    const url = product ? `${safeEndpoint}${product.id}/` : safeEndpoint;
+      const method = product ? 'PATCH' : 'POST';
+      const safeEndpoint = endpoint || '/api/inventory/product/';
+      const url = product ? `${safeEndpoint}${product.id}/` : safeEndpoint;
 
-    // Single submitFormData call
-    console.log('Selected file:', selectedFile);
-    console.log('FormData entries:', [...submitData.entries()]);
-    await submitFormData(
-      url,
-      submitData,
-      () => {
-        setFormData(emptyForm);
-        setPreviewImage(null);
-        setSelectedFile(null);
-      },
-      setLoading,
-      setError,
-      setSuccess,
-      onSaved,
-      method,
-      true // isFormData
-    );
+      await submitFormData(
+        url,
+        submitData,
+        () => {
+          setFormData(emptyForm);
+          setPreviewImage(null);
+          setSelectedFile(null);
+        },
+        setLoading,
+        setError,
+        setSuccess,
+        onSaved,
+        method,
+        true // isFormData
+      );
+    } catch (err) {
+      console.error('Form submission error:', err);
+      setError(err);
+      setLoading(false);
+    }
   };
 
   return (
@@ -206,11 +235,7 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
           <Form.Group controlId="product_type">
             <Form.Label>Product Type</Form.Label>
             <Select
-              value={
-                productTypeOptions.find(
-                  (opt) => opt.value === product?.category?.product_type?.id
-                ) || null
-              }
+              value={formData.product_type_id || null} // use formData
               onChange={handleProductTypeChange}
               options={productTypeOptions}
               placeholder="Select Product Type"
@@ -219,11 +244,7 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
           <Form.Group controlId="category_id">
             <Form.Label>Category</Form.Label>
             <Select
-              value={
-                categoryOptions.find(
-                  (opt) => opt.value === formData.category_id
-                ) || null
-              }
+              value={formData.category_id || null} // use formData
               onChange={handleCategoryChange}
               options={categoryOptions}
               placeholder="Select Category"
