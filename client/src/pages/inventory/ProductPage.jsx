@@ -1,85 +1,97 @@
 // src/pages/inventory/ProductPage.jsx
-import { useState } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Row, Col, Button, ButtonGroup } from 'react-bootstrap';
+import { fetchWithFilters } from '../../utils/fetchWithFilters';
 import ProductTable from '../../components/inventory/ProductTable';
-import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
-import { refreshWithFlip } from '../../utils/refreshWithFlip';
 import ProductForm from '../../components/inventory/ProductForm';
 
 const ProductPage = () => {
+  const [products, setProducts] = useState([]);
+  const [showRemoved, setShowRemoved] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // Pagination hook
-  const {
-    items: products,
-    nextPageUrl,
-    prevPageUrl,
-    fetchPage,
-    currentPage,
-    totalPages,
-  } = usePaginatedFetch('/api/inventory/product/');
-
-  // Refresh logic after saving
   const handleRefresh = async () => {
-    console.log('Refreshing current page...');
-    await refreshWithFlip(fetchPage, null, null);
-    setSelectedProduct(null);
+    const data = await fetchWithFilters({
+      endpoint: '/api/inventory/product/',
+    });
+    setProducts(data.results);
+    setShowRemoved(false);
   };
 
   return (
-    <div className="topParent">
-      <section className="hero">
-        <Container className="text-center py-5">
-          <h1 className="ft-bigtext mb-5">Product Management</h1>
-          <hr />
-          <Row className="welcome-hero justify-content-center">
-            <Col>
-              {selectedProduct ? (
-                <ProductForm
-                  product={selectedProduct}
-                  endpoint="/api/inventory/product/"
-                  onSaved={handleRefresh}
-                  onCancel={() => setSelectedProduct(null)}
-                />
-              ) : (
-                <>
-                  {/* Product Table */}
-                  <ProductTable
-                    items={products}
-                    fetchPage={fetchPage}
-                    onSelect={setSelectedProduct}
-                  />
+    <Row className="welcome-hero justify-content-center">
+      <Col>
+        {selectedProduct ? (
+          <ProductForm
+            product={selectedProduct}
+            endpoint="/api/inventory/product/"
+            onSaved={handleRefresh}
+            onCancel={() => setSelectedProduct(null)}
+          />
+        ) : (
+          <>
+            <ProductTable
+              items={products}
+              onSelect={setSelectedProduct}
+              showRemoved={showRemoved}
+            />
 
-                  {/* Pagination buttons */}
-                  <div className="pagination-buttons mt-3 d-flex align-items-center justify-content-center">
-                    <Button
-                      variant="secondary"
-                      className="me-2"
-                      disabled={!prevPageUrl}
-                      onClick={() => fetchPage(prevPageUrl)}
-                    >
-                      Previous
-                    </Button>
-
-                    <span className="mx-2">
-                      Page {currentPage} of {totalPages}
-                    </span>
-
-                    <Button
-                      variant="secondary"
-                      disabled={!nextPageUrl}
-                      onClick={() => fetchPage(nextPageUrl)}
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </>
-              )}
-            </Col>
-          </Row>
-        </Container>
-      </section>
-    </div>
+            {/* Controls row */}
+            <Row className="mt-3">
+              <Col className="d-flex justify-content-start">
+                {/* Pagination buttons grouped */}
+                <ButtonGroup>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => fetchPage('/api/inventory/product/?page=1')}
+                  >
+                    First Page
+                  </Button>
+                  {/* Add Prev/Next here */}
+                  <Button
+                    variant="outline-primary"
+                    onClick={() =>
+                      fetchPage('/api/inventory/product/?page=prev')
+                    }
+                  >
+                    Prev
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() =>
+                      fetchPage('/api/inventory/product/?page=next')
+                    }
+                  >
+                    Next
+                  </Button>
+                </ButtonGroup>
+              </Col>
+              <Col className="d-flex justify-content-end">
+                {showRemoved ? (
+                  <Button variant="primary" onClick={handleRefresh}>
+                    Show Active
+                  </Button>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    onClick={async () => {
+                      const data = await fetchWithFilters({
+                        endpoint: '/api/inventory/product/',
+                        extraParams: { status: 'removed' },
+                      });
+                      setProducts(data.results);
+                      setShowRemoved(true);
+                    }}
+                  >
+                    Show Removed
+                  </Button>
+                )}
+              </Col>
+            </Row>
+          </>
+        )}
+      </Col>
+    </Row>
   );
 };
 

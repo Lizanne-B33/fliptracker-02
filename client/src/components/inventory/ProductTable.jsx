@@ -1,135 +1,98 @@
-import React from 'react';
-import { formatCurrency } from '../../utils/formatCurrency';
-import { axiosInstance } from '../../api/apiConfig';
+// src/pages/inventory/ProductPage.jsx
+import React, { useState } from 'react';
+import { Row, Col, Button, ButtonGroup } from 'react-bootstrap';
+import { fetchWithFilters } from '../../utils/fetchWithFilters';
+import ProductTable from './ProductTable';
+import ProductForm from './ProductForm';
 
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  flexRender,
-} from '@tanstack/react-table';
+const ProductPage = () => {
+  const [products, setProducts] = useState([]);
+  const [showRemoved, setShowRemoved] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-const ProductTable = ({ items = [], onSelect, fetchPage, currentPageUrl }) => {
-  const [sorting, setSorting] = React.useState([]);
-  const [globalFilter, setGlobalFilter] = React.useState('');
-
-  const handleRemove = async (product) => {
-    try {
-      await axiosInstance.patch(`/api/inventory/product/${product.id}/`, {
-        status: 'removed',
-      });
-      await fetchPage(currentPageUrl); // refresh table
-    } catch (err) {
-      console.error(err);
-      alert('Error removing product');
-    }
+  // Reusable refresh function: defaults to active products, but can take a custom URL
+  const handleRefresh = async (url = '/api/inventory/product/') => {
+    const data = await fetchWithFilters({ endpoint: url });
+    setProducts(data.results);
+    setShowRemoved(false);
   };
 
-  const columns = [
-    {
-      header: 'Title',
-      accessorKey: 'title',
-      cell: (info) => <div className="text-start">{info.getValue()}</div>,
-    },
-    {
-      header: 'Price',
-      accessorKey: 'price',
-      cell: (info) => (
-        <div className="text-end">{formatCurrency(info.getValue())}</div>
-      ),
-    },
-    {
-      header: 'Actions',
-      accessorKey: 'id',
-      cell: (info) => (
-        <div className="d-flex gap-2 justify-content-end">
-          <button
-            className="btn btn-primary btn-sm"
-            onClick={() => onSelect(info.row.original)}
-          >
-            Edit
-          </button>
-          <button
-            className="btn btn-danger btn-sm"
-            onClick={() => handleRemove(info.row.original)}
-          >
-            Remove
-          </button>
-        </div>
-      ),
-    },
-  ];
-
-  const table = useReactTable({
-    data: items,
-    columns,
-    state: { sorting, globalFilter },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
-
   return (
-    <>
-      {/* Global search box */}
-      <input
-        type="text"
-        className="form-control mb-3"
-        placeholder="Search products..."
-        value={globalFilter ?? ''}
-        onChange={(e) => setGlobalFilter(e.target.value)}
-      />
+    <Row className="welcome-hero justify-content-center">
+      <Col>
+        {selectedProduct ? (
+          <ProductForm
+            product={selectedProduct}
+            endpoint="/api/inventory/product/"
+            onSaved={handleRefresh}
+            onCancel={() => setSelectedProduct(null)}
+          />
+        ) : (
+          <>
+            <ProductTable
+              items={products}
+              onSelect={setSelectedProduct}
+              showRemoved={showRemoved}
+            />
 
-      <table className="table table-striped">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  onClick={header.column.getToggleSortingHandler()}
-                  style={{
-                    cursor: header.column.getCanSort() ? 'pointer' : 'default',
-                  }}
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                  {{
-                    asc: ' 🔼',
-                    desc: ' 🔽',
-                  }[header.column.getIsSorted()] ?? null}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length} className="text-center">
-                No products found.
-              </td>
-            </tr>
-          ) : (
-            table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </>
+            {/* Controls row */}
+            <Row className="mt-3">
+              <Col className="d-flex justify-content-start">
+                {/* Pagination buttons grouped */}
+                <ButtonGroup>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() =>
+                      handleRefresh('/api/inventory/product/?page=1')
+                    }
+                  >
+                    First Page
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() =>
+                      handleRefresh('/api/inventory/product/?page=prev')
+                    }
+                  >
+                    Prev
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() =>
+                      handleRefresh('/api/inventory/product/?page=next')
+                    }
+                  >
+                    Next
+                  </Button>
+                </ButtonGroup>
+              </Col>
+              <Col className="d-flex justify-content-end">
+                {showRemoved ? (
+                  <Button variant="primary" onClick={() => handleRefresh()}>
+                    Show Active
+                  </Button>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    onClick={async () => {
+                      const data = await fetchWithFilters({
+                        endpoint: '/api/inventory/product/',
+                        extraParams: { status: 'removed' },
+                      });
+                      setProducts(data.results);
+                      setShowRemoved(true);
+                    }}
+                  >
+                    Show Removed
+                  </Button>
+                )}
+              </Col>
+            </Row>
+          </>
+        )}
+      </Col>
+    </Row>
   );
 };
 
-export default ProductTable;
+export default ProductPage;
