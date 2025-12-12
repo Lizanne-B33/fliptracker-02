@@ -1,10 +1,15 @@
-// utils/refreshWithFlip.js
-export const refreshWithFlip = async (fetchPage, currentPage, pageCount) => {
+// src/utils/refreshWithFlip.js
+/**
+ * Simplified refresh: just fetches the current page.
+ * Always passes numeric page numbers to avoid string/object bugs.
+ *
+ * @param {function} fetchPage - Function from hook to fetch a specific page (expects a number)
+ * @param {number} currentPage - Current active page
+ */
+export const refreshWithFlip = async (fetchPage, currentPage) => {
   const safePage =
     Number.isInteger(currentPage) && currentPage > 0 ? currentPage : 1;
-  const neighbor =
-    safePage < pageCount ? safePage + 1 : Math.max(safePage - 1, 1);
 
-  await fetchPage(`/api/inventory/product/?page=${neighbor}`);
-  await fetchPage(`/api/inventory/product/?page=${safePage}`);
+  // Refetch only current page
+  await fetchPage(safePage);
 };

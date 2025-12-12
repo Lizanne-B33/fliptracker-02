@@ -1,5 +1,4 @@
-// ProductTypeList.js
-// react-paginate is the library that handles rendering pages and nav controls.
+// src/components/inventory/ProductTypeList.jsx
 import ReactPaginate from 'react-paginate';
 
 //=========================================
@@ -8,32 +7,34 @@ import ReactPaginate from 'react-paginate';
 // items: current page of items (array of objects)
 // pageCount: total pages (calc by hook)
 // fetchPage: loads specific page from API
-// onSelect: callback to tell parent which item was clicked (editing.)
-
+// onSelect: callback to parent when editing an item
 function ProductTypeList({ items, pageCount, fetchPage, onSelect }) {
-  console.log('ProductTypeList items:', items); // debugging
+  console.log('ProductTypeList items:', items);
 
-  //=========================================
-  // RENDERING THE LIST & PAGINATION CONTROLS
-  //==========================================
   return (
     <>
+      {/* LIST */}
       <div className="row ft-listItems">
-        {items.map((pt) => (
-          <div className="col-3 text-start" key={pt.id}>
-            <h6 onClick={() => onSelect(pt)}>{pt.name}</h6>
-          </div>
-        ))}
+        {items.length === 0 ? (
+          <div className="col-12 text-center">No product types found.</div>
+        ) : (
+          items.map((pt) => (
+            <div className="col-3 text-start" key={pt.id}>
+              <h6 onClick={() => onSelect(pt)}>{pt.name}</h6>
+            </div>
+          ))
+        )}
       </div>
 
+      {/* PAGINATION */}
       <ReactPaginate
         previousLabel={'← Previous'}
         nextLabel={'Next →'}
         breakLabel={'...'}
-        pageCount={pageCount}
+        pageCount={Math.ceil(pageCount) || 1} // ensure integer
         marginPagesDisplayed={2}
         pageRangeDisplayed={5}
-        onPageChange={(selected) => fetchPage(selected.selected + 1)}
+        onPageChange={(selected) => fetchPage(selected.selected + 1)} // numeric page
         containerClassName={'pagination'}
         activeClassName={'active'}
       />

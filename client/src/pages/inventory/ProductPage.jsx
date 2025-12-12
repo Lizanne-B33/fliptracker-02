@@ -28,18 +28,25 @@ const ProductPage = () => {
     async (page = 1, override = {}) => {
       try {
         const isRemoved = override.isRemoved ?? showRemoved;
+
         const search = override.search ?? filters.search ?? undefined;
 
-        const field = override.orderingField ?? sortField;
-        const asc = override.orderingAsc ?? sortAsc;
+        // Ordering
+        const field = override.orderingField ?? sortField ?? undefined;
+
+        const asc = override.orderingAsc ?? sortAsc ?? true;
+
         const ordering = field ? (asc ? field : `-${field}`) : undefined;
 
-        const status =
-          override.status !== undefined
-            ? override.status
-            : isRemoved
-              ? 'removed'
-              : undefined;
+        // Status logic
+        let status;
+        if (override.status !== undefined) {
+          status = override.status;
+        } else if (isRemoved) {
+          status = 'removed';
+        } else if (filters.status) {
+          status = filters.status;
+        }
 
         const data = await fetchWithFilters({
           endpoint: '/api/inventory/product/',
@@ -134,7 +141,17 @@ const ProductPage = () => {
             <FilterBar
               onApply={(newFilters) => {
                 setFilters(newFilters);
-                fetchPage(1, { search: newFilters.search });
+
+                fetchPage(1, {
+                  search: newFilters.search,
+                  status: newFilters.status,
+                  orderingField: newFilters.ordering
+                    ? newFilters.ordering.replace('-', '')
+                    : undefined,
+                  orderingAsc: newFilters.ordering
+                    ? !newFilters.ordering.startsWith('-')
+                    : undefined,
+                });
               }}
             />
 
