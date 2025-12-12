@@ -15,6 +15,8 @@ import CategoryPage from './pages/inventory/CategoryPage';
 import ProductInsightsPage from './pages/insights/ProductInsightsPage';
 import ProductForm from './components/inventory/ProductForm';
 import ProductAddPage from './pages/inventory/ProductAddPage';
+import ReadyToListReportPage from './pages/insights/ReadyToListReportPage';
+import ProfitByMonthReport from './pages/insights/ProfitByMonthReport';
 
 function App() {
   return (
@@ -53,8 +55,12 @@ function App() {
 
         {/* Insights section (top-level) */}
         <Route
-          path="/insights/product-cards"
-          element={<ProductInsightsPage />}
+          path="/insights/ready-report"
+          element={<ReadyToListReportPage />}
+        />
+        <Route
+          path="/insights/profit-by-month"
+          element={<ProfitByMonthReport />}
         />
 
         {/* Catch-all */}

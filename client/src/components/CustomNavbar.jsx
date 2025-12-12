@@ -58,11 +58,11 @@ function CustomNavbar() {
                 </NavDropdown>
 
                 <NavDropdown title="Insights" id="insights-nav-dropdown">
-                  <NavDropdown.Item as={NavLink} to="/insights/product-cards">
-                    ProductCards
+                  <NavDropdown.Item as={NavLink} to="/insights/ready-report">
+                    Ready to List Report
                   </NavDropdown.Item>
-                  <NavDropdown.Item as={NavLink} to="/insights/trends">
-                    Trends
+                  <NavDropdown.Item as={NavLink} to="/insights/profit-by-month">
+                    Profit by Month
                   </NavDropdown.Item>
                 </NavDropdown>
 

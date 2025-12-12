@@ -5,7 +5,6 @@ https://www.django-rest-framework.org/api-guide/generic-views/#generic-views
 
 """
 
-from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, ProductType
 from user.models import User  # Importing from another app
@@ -13,6 +12,10 @@ from rest_framework import permissions, viewsets, filters
 from .serializers import ProductCreateUpdateSerializer, ProductFastEntrySerializer, CategorySerializer, ProductTypeSerializer
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models.functions import TruncMonth
+from django.db.models import Sum, F, FloatField
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 # Create your views here.
 
@@ -48,6 +51,30 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_object(self):
         # Always allow lookup by pk, even if status=removed
         return Product.objects.get(pk=self.kwargs['pk'])
+
+    @action(detail=False, methods=['get'], url_path='profit-by-month')
+    def profit_by_month(self, request):
+        sold_products = (
+            Product.objects.filter(status="sold")
+            .annotate(
+                month=TruncMonth('updated_at'),
+                profit=((F('price') * 0.75 - F('cost')) * F('purch_qty'))
+            )
+            .values('month')
+            .annotate(total_profit=Sum('profit', output_field=FloatField()))
+            .order_by('month')
+        )
+
+        # Convert month to YYYY-MM format
+        data = [
+            {
+                "month": item["month"].strftime("%Y-%m"),
+                "profit": round(item["total_profit"], 2)
+            }
+            for item in sold_products
+        ]
+
+        return Response(data)
 
 
 class ProductFastEntryViewSet(viewsets.ModelViewSet):

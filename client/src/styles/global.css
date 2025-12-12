@@ -246,6 +246,40 @@ nav a,
 }
 
 /* ===============================
+   PRINT STYLING
+   =============================== */
+
+@media print {
+  @page {
+    margin: 0.25in; /* the smallest consistent safe margin */
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .report-container {
+    padding: 0.25in; /* nice tight print layout */
+  }
+
+  /* Optional: make the table full width when printing */
+  .report-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 4px 6px;
+  }
+
+  /* Hide buttons in print */
+  .no-print {
+    display: none !important;
+  }
+}
+/* ===============================
    CUSTOM STYLING
    =============================== */
 .ft-proposedPrice {
