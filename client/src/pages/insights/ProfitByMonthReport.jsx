@@ -1,12 +1,24 @@
+// This is an aggregated report that calculates the
+// profit made from sold items, then summarizes by month.
+// this report can be printed out by the user for record keeping
+// or to send to the accountant.
+
 // client/src/pages/insights/ProfitByMonthReport.jsx
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from '../../api/apiConfig';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 export default function ProfitByMonthReport() {
+  // COMPONENT STATE: the Loading is the indicator the user sees
+  // while the report is getting created, the rows, what the report
+  // generates.
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Runs once when the component is mounted.
+  // [] dependency array only on first render.
+  // fetch data: async function that gets data from api, and updates
+  // the state with data. (or on error, sets rows to [])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,12 +37,13 @@ export default function ProfitByMonthReport() {
     fetchData();
   }, []);
 
+  // Print button, renders the print dialog for the current page.
+  // logo appears because it was on my nav/header. Magic!
   const printPage = () => window.print();
 
   return (
     <div className="report-container" style={{ margin: '20px' }}>
       <h2 style={{ marginBottom: '16px' }}>Profit by Month</h2>
-
       <div style={{ marginBottom: '12px' }}>
         <button onClick={printPage} className="btn btn-primary">
           Print

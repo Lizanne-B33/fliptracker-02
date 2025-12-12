@@ -1,11 +1,15 @@
+// This is the reusable filter bar that is included on the table.
+
 import React, { useState } from 'react';
 import { Row, Col, Form, Button, Card } from 'react-bootstrap';
 
+// State Variables.
 const FilterBar = ({ onApply }) => {
-  const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
-  const [ordering, setOrdering] = useState('');
+  const [search, setSearch] = useState(''); // text user entered in search box
+  const [status, setStatus] = useState(''); // product status for filtering.
+  const [ordering, setOrdering] = useState(''); // contains the sorted option.
 
+  // HANDLE SUBMIT - triggered by the apply button
   const handleSubmit = (e) => {
     e.preventDefault();
     onApply({
@@ -15,6 +19,7 @@ const FilterBar = ({ onApply }) => {
     });
   };
 
+  // Clears any entries in the filter bar.
   const handleClear = () => {
     setSearch('');
     setStatus('');
@@ -22,6 +27,7 @@ const FilterBar = ({ onApply }) => {
     onApply({ search: undefined, status: undefined, ordering: undefined });
   };
 
+  // Rendering. Wraps in a BS CARD for styling.
   return (
     <Card
       className="mb-3 p-3 mx-auto"

@@ -1,4 +1,8 @@
 // src/pages/inventory/ProductTypePage.jsx
+
+// This is the page where the user can create a product type.
+// The Product type must be unique and is locally available.
+
 import { useState } from 'react';
 import ProductTypeForm from '../../components/inventory/ProductTypeForm';
 import ProductTypeList from '../../components/inventory/ProductTypeList';

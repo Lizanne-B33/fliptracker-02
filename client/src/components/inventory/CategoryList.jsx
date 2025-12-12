@@ -1,3 +1,6 @@
+// this list shows the users what categories have been set
+// in the system. The categories are grouped by Product Type.
+
 import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
 import ReactPaginate from 'react-paginate';
 

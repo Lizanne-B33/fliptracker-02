@@ -2,6 +2,8 @@
 // https://react-bootstrap.github.io/docs/components/cards/
 // https://www.geeksforgeeks.org/reactjs/how-to-map-data-into-components-using-reactjs/
 
+// This component is used to display features in cards for larger devices.
+
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 import '../../styles/feature_cards.css';

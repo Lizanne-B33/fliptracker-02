@@ -1,3 +1,6 @@
+// This is the form that is used to create or edit
+// Product types.
+
 import React, { useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
 import { axiosInstance } from '../../api/apiConfig';

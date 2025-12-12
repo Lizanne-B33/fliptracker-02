@@ -1,3 +1,5 @@
+// In process - not implemented in MVP.
+
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import ProductCards from '../../components/insights/ProductCards';

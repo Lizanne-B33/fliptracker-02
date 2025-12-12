@@ -178,6 +178,40 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
   //================================================
   // PRODUCT TYPE / CATEGORY FIELDS
   //================================================
+  const loadProductTypes = React.useCallback(
+    (inputValue) => {
+      return axiosPrivate
+        .get('/api/inventory/product_type/', { params: { search: inputValue } })
+        .then((res) =>
+          (res.data.results ?? res.data).map((pt) => ({
+            value: pt.id,
+            label: pt.name,
+          }))
+        );
+    },
+    [axiosPrivate]
+  );
+
+  const loadCategories = React.useCallback(
+    (inputValue) => {
+      if (!formData.product_type_id?.value) return Promise.resolve([]);
+      return axiosPrivate
+        .get('/api/inventory/category/', {
+          params: {
+            product_type: formData.product_type_id.value,
+            search: inputValue,
+          },
+        })
+        .then((res) =>
+          (res.data.results ?? res.data).map((c) => ({
+            value: c.id,
+            label: c.name,
+          }))
+        );
+    },
+    [axiosPrivate, formData.product_type_id]
+  );
+
   const ProductTypeCategoryFields = ({ formData, setFormData, error }) => {
     return (
       <>
@@ -192,19 +226,14 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
               category_id: null, // reset category when type changes
             }))
           }
-          loadOptions={(inputValue) =>
-            axiosPrivate
-              .get('/api/inventory/product_type/', {
-                params: { search: inputValue },
-              })
-              .then((res) => {
-                const items = res.data.results ?? res.data;
-                return items.map((pt) => ({ value: pt.id, label: pt.name }));
-              })
-          }
+          loadOptions={loadProductTypes}
           placeholder="Select a Product Type"
           required
           error={error?.product_type_id}
+          styles={{
+            placeholder: (base) => ({ ...base, textAlign: 'left' }),
+            singleValue: (base) => ({ ...base, textAlign: 'left' }),
+          }}
         />
 
         <AsyncSelectField
@@ -214,23 +243,14 @@ const ProductFastForm = ({ item, onSaved, endpoint }) => {
           onChange={(selected) =>
             setFormData((prev) => ({ ...prev, category_id: selected }))
           }
-          loadOptions={(inputValue) => {
-            if (!formData.product_type_id?.value) return Promise.resolve([]);
-            return axiosPrivate
-              .get('/api/inventory/category/', {
-                params: {
-                  product_type: formData.product_type_id.value,
-                  search: inputValue,
-                },
-              })
-              .then((res) => {
-                const items = res.data.results ?? res.data;
-                return items.map((c) => ({ value: c.id, label: c.name }));
-              });
-          }}
+          loadOptions={loadCategories}
           placeholder="Select a Category"
           required
           error={error?.category_id}
+          styles={{
+            placeholder: (base) => ({ ...base, textAlign: 'left' }),
+            singleValue: (base) => ({ ...base, textAlign: 'left' }),
+          }}
         />
       </>
     );

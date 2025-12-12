@@ -1,3 +1,6 @@
+// this was my original product list, that is not used in the
+// MVP. I want to retain it for future development.
+
 // ProductList.js
 import { Container, Row, Col, Image } from 'react-bootstrap';
 import { formatCurrency } from '../../utils/formatCurrency';

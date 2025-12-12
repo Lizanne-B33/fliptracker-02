@@ -1,3 +1,5 @@
+// Not  used in MVP - keeping for future development
+
 // src/components/insights/ProductCards.jsx
 // Uses hook: usePaginatedFetch to get products and render them in the grid
 import React, { useEffect } from 'react';

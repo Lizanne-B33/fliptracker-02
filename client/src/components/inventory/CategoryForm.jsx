@@ -1,3 +1,7 @@
+// This form allows users to create or edit Categories.
+// Categories must be related to a Product type, and the
+// Category / Product Type relationship must be unique.
+
 import React, { useEffect } from 'react';
 import { Row, Form, Button } from 'react-bootstrap';
 import { axiosInstance } from '../../api/apiConfig';

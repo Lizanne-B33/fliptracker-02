@@ -1,3 +1,7 @@
+// This is the page where the user can create the category
+// which has to be assigned to a Product type. The category
+// is locally available.
+
 // Imports React state hook and components that are on the page.
 import React, { useState, useEffect } from 'react';
 import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';

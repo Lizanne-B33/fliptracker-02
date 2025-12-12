@@ -1,3 +1,5 @@
+// This is the list that renders all the loaded Product Types.
+
 // src/components/inventory/ProductTypeList.jsx
 import ReactPaginate from 'react-paginate';
 

@@ -1,5 +1,10 @@
-// Sources
-// https://paperform.co/tools/free-react-form-creator/
+// Sources https://paperform.co/tools/free-react-form-creator/
+// Updated with help from AI & Duck.
+// This is a simple form that is intended to be used from a mobile
+// device for a quick add to inventory by the user.  This does not
+// contain all the fields, but only those that would be necessary
+// for purchase decision when deciding whether to add a product to the
+// product inventory.
 
 // Imports: useState manages state, axiosInstance is Axios Client (communicates with backend)
 import React, { useState } from 'react';

@@ -1,8 +1,14 @@
+// Report that displays all items that are ready to list.  It is
+// useful to print out and take to an external POS system for
+// loading.  It also has a bulk update that allows the user to
+// change the status to Listed quickly.
+
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Button, Card, Table } from 'react-bootstrap';
 import { fetchWithFilters } from '../../utils/fetchWithFilters';
 import { axiosInstance } from '../../api/apiConfig';
 
+// SETS COMPONENT STATE
 const ReadyToListReportPage = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +31,7 @@ const ReadyToListReportPage = () => {
     setLoading(false);
   };
 
-  // Update all items to "listed"
+  // BULK UPDATE!- Update all items to "listed"
   const markAllListed = async () => {
     try {
       for (const p of items) {
@@ -41,6 +47,8 @@ const ReadyToListReportPage = () => {
     }
   };
 
+  // Initial Load - calls loadItems once when mounted.
+  // Populates the items & quits the spinner.
   useEffect(() => {
     loadItems();
   }, []);

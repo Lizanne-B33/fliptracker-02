@@ -1,5 +1,5 @@
-// Sources
-// Forked code from https://github.com/sinansarikaya/django-react-auth
+// Sources: // Forked code from https://github.com/sinansarikaya/django-react-auth
+// No longer used - created custom navbar, keeping in the MVP for future reference.
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';

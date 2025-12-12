@@ -1,4 +1,6 @@
-// src/components/insights/ProductCard.jsx
+// Not  used in MVP - keeping for future development
+
+src / components / insights / ProductCard.jsx;
 // this is the single card that shows the product image and an edit button
 // that opens the edit form for the object.
 import React from 'react';

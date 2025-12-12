@@ -1,5 +1,6 @@
-// Sources:
-// https://www.geeksforgeeks.org/reactjs/react-bootstrap-custom-accordions/
+// Sources: // https://www.geeksforgeeks.org/reactjs/react-bootstrap-custom-accordions/
+
+// This component is used to display features in an accordion on mobile devices.
 
 import React, { useState } from 'react';
 import Accordion from 'react-bootstrap/Accordion';

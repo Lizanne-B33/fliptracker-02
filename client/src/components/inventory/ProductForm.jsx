@@ -1,3 +1,11 @@
+// This is the form that is used to edit product
+// or to add a product from scratch.  It contains
+// all fields of the product that can be edited.
+// User, Create date, Update date are all managed by the program.
+// Sold date is only updated when the product is sold automatically
+// by the program. (TODO - need a way to revert this if the product is
+// changed to another status)
+
 // src/components/inventory/ProductForm.jsx
 import { useState, useEffect, useRef } from 'react';
 import { Row, Col, Form, Button, Container } from 'react-bootstrap';

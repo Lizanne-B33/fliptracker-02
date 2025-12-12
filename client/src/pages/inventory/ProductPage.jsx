@@ -1,4 +1,11 @@
 // src/pages/inventory/ProductPage.jsx
+// This page combines the list of active products (products that are NOT removed. )
+// The list allows them to edit a record, or remove it.
+// This app is not designed for deletion.  Removal could be used if the
+// user decided to keep the product and this would be good information.
+// products that are entered in error can be re-used for a new product.
+// Therefore no need for a delete.
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Button, ButtonGroup } from 'react-bootstrap';
 import ProductTable from '../../components/inventory/ProductTable';
