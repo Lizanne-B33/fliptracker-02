@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Row, Col, Form, Button, Container } from 'react-bootstrap';
 import Select from 'react-select';
 import TextField from '../formFields/TextField';
+import DateField from '../formFields/DateField';
 import FileField from '../formFields/FileField';
 import NumberField from '../formFields/NumberField';
 import TextAreaField from '../formFields/TextAreaField';
@@ -43,6 +44,16 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  // Set the sold date when the product is sold.
+  useEffect(() => {
+    if (formData.status === 'sold' && !formData.sold_date) {
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      setFormData((prev) => ({ ...prev, sold_date: today }));
+    } else if (formData.status !== 'sold') {
+      // Optional: clear sold_date if status is not sold
+      setFormData((prev) => ({ ...prev, sold_date: '' }));
+    }
+  }, [formData.status]);
   // Fetch product types on mount
   useEffect(() => {
     fetchList('/api/inventory/product_type/')
@@ -253,7 +264,7 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
               />
             </Form.Group>
           </Col>
-          <Col md={4}>
+          <Col md={3}>
             {previewImage && (
               <div className="mt-2">
                 <img
@@ -269,28 +280,42 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
               </div>
             )}
           </Col>
-          <Col md={2}>
-            <p className="text-muted">
-              Please use this field if you want to change the image.
-            </p>
-            <FileField
-              ref={fileInputRef}
-              name="prod_image"
-              onChange={handleFileChange}
-            />
-            <SelectField
-              label="Inventory Status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              required
-            >
-              <option value="acquired">Acquired</option>
-              <option value="ready_to_list">Ready to List</option>
-              <option value="listed">Listed for Sale</option>
-              <option value="sold">Sold</option>
-              <option value="removed">Removed</option>
-            </SelectField>
+          <Col md={3}>
+            <Row>
+              <p className="text-muted">
+                Please use this field if you want to change the image.
+              </p>
+              <FileField
+                ref={fileInputRef}
+                name="prod_image"
+                onChange={handleFileChange}
+              />
+            </Row>
+            <Row>
+              <Col md={6}>
+                <SelectField
+                  label="Inventory Status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="acquired">Acquired</option>
+                  <option value="ready_to_list">Ready to List</option>
+                  <option value="listed">Listed for Sale</option>
+                  <option value="sold">Sold</option>
+                  <option value="removed">Removed</option>
+                </SelectField>
+              </Col>
+              <Col md={6}>
+                <DateField
+                  label="Date Sold"
+                  name="sold_date"
+                  value={formData.sold_date}
+                  onChange={handleChange}
+                />
+              </Col>
+            </Row>
           </Col>
         </Row>
 

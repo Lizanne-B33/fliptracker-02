@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 from .views import ProductFastEntryViewSet, ProductViewSet, CategoryViewSet, ProductTypeViewSet
+from .views import ProfitByMonthView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -17,4 +18,5 @@ app_name = 'inventory'
 urlpatterns = [
     path("", include(router.urls)),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("profit-by-month/", ProfitByMonthView.as_view(), name="profit-by-month"),
 ]

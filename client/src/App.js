@@ -12,7 +12,6 @@ import ProductFastPage from './pages/inventory/ProductFastPage';
 import ProductPage from './pages/inventory/ProductPage';
 import ProductTypePage from './pages/inventory/ProductTypePage';
 import CategoryPage from './pages/inventory/CategoryPage';
-import ProductInsightsPage from './pages/insights/ProductInsightsPage';
 import ProductForm from './components/inventory/ProductForm';
 import ProductAddPage from './pages/inventory/ProductAddPage';
 import ReadyToListReportPage from './pages/insights/ReadyToListReportPage';

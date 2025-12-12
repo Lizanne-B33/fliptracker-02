@@ -16,8 +16,38 @@ from django.db.models.functions import TruncMonth
 from django.db.models import Sum, F, FloatField
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Sum, F, FloatField
+from django.db.models.functions import TruncMonth
 
 # Create your views here.
+
+
+class ProfitByMonthView(APIView):
+    """
+    Returns monthly profit for sold products.
+    Profit = ((price * 0.75) - cost) * purch_qty
+    """
+
+    def get(self, request):
+        sold_products = Product.objects.filter(status='sold')
+        # Annotate profit per product
+        sold_products = sold_products.annotate(
+            profit_per_item=(F('price') * 0.75 - F('cost')) * F('purch_qty')
+        )
+        # Group by month
+        monthly_profit = (
+            sold_products
+            .annotate(month=TruncMonth('sold_date'))
+            .values('month')
+            .annotate(profit=Sum('profit_per_item', output_field=FloatField()))
+            .order_by('month')
+        )
+        # Format month nicely for frontend
+        data = [{'month': mp['month'].strftime(
+            '%Y-%m'), 'profit': mp['profit']} for mp in monthly_profit]
+        return Response(data)
 
 
 class ProductViewSet(viewsets.ModelViewSet):
