@@ -33,6 +33,9 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
     ai_desc: '',
     fast_notes: '',
     sold_date: '',
+    brand: '',
+    color: '',
+    size: '',
   };
 
   const [formData, setFormData] = useState(emptyForm);
@@ -101,6 +104,9 @@ const ProductForm = ({ product, endpoint, onSaved, onCancel }) => {
       ai_desc: product.ai_desc || '',
       fast_notes: product.fast_notes || '',
       sold_date: product.sold_date || '',
+      brand: product.brand || '',
+      color: product.color || '',
+      size: product.size || '',
     });
 
     setPreviewImage(getProductImageURL(product.prod_image));

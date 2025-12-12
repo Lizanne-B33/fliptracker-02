@@ -34,7 +34,7 @@ export default function Register() {
     };
 
     try {
-      await axiosInstance.post('/user/register/', data);
+      await axiosInstance.post('/api/user/register/', data);
       event.target.reset();
       navigate('/auth/login'); // redirect to login after success
     } catch (err) {
@@ -53,7 +53,7 @@ export default function Register() {
     <div className="container">
       <h2>Register</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={onSubmitForm}>
+      <form onSubmit={onSubmitForm} autoComplete="off">
         <input
           type="text"
           placeholder="First Name"

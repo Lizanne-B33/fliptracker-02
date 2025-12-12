@@ -72,7 +72,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
-        qs = Product.objects.all()
+        qs = Product.objects.filter(owner=self.request.user)
         status = self.request.query_params.get('status')
         if status == 'removed':
             return qs.filter(status='removed')

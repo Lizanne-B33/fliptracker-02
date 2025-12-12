@@ -2,6 +2,8 @@
 // the dual Token/Cookies did not work and cost many hours of research
 // Sources: the DUCK, ChatGPT and COPilot.
 // Original Fork: https://github.com/sinansarikaya/django-react-auth
+// 12/12 Removed all localStorage.removeItem calls and now uses memory-only.
+// Reloading the app starts logged out with this change.
 
 // ===================================================================
 
@@ -15,7 +17,7 @@ export default function useAxiosPrivate() {
   const refresh = useRefreshToken();
 
   useEffect(() => {
-    // Request interceptor: attach current access token
+    // Attach token to requests
     const requestIntercept = axiosInstance.interceptors.request.use(
       (config) => {
         if (accessToken && !config.headers['Authorization']) {
@@ -26,7 +28,7 @@ export default function useAxiosPrivate() {
       (error) => Promise.reject(error)
     );
 
-    // Response interceptor: handle 401 by refreshing
+    // Handle 401 → refresh token
     const responseIntercept = axiosInstance.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -40,10 +42,9 @@ export default function useAxiosPrivate() {
             return axiosInstance(prevRequest);
           } catch (refreshError) {
             console.error('Token refresh failed:', refreshError);
+            // Clear memory-only auth state
             setUser(null);
             setAccessToken(null);
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
             return Promise.reject(refreshError);
           }
         }

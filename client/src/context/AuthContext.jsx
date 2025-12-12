@@ -2,10 +2,12 @@
 // the dual Token/Cookies did not work and cost many hours of research
 // Sources: the DUCK, ChatGPT and COPilot.
 // Original Fork: https://github.com/sinansarikaya/django-react-auth
+// 12/12 Want to assure tha the app always opens logged out.  This change
+// removes localStorage, but keeps my refresh working.
 
 // ===================================================================
 
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext } from 'react';
 
 export const AuthContext = createContext({
   user: null,
@@ -16,33 +18,11 @@ export const AuthContext = createContext({
 });
 
 export function AuthContextProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-
-  const [accessToken, setAccessToken] = useState(() => {
-    return localStorage.getItem('accessToken') || null;
-  });
+  // Memory-only JWT, never persisted
+  const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
 
   const isLoggedIn = !!accessToken;
-
-  // Keep localStorage in sync
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (accessToken) {
-      localStorage.setItem('accessToken', accessToken);
-    } else {
-      localStorage.removeItem('accessToken');
-    }
-  }, [accessToken]);
 
   return (
     <AuthContext.Provider
@@ -59,7 +39,5 @@ export function AuthContextProvider({ children }) {
   );
 }
 
-// Hook to use auth context
 export const useAuth = () => useContext(AuthContext);
-
 export default AuthContext;
