@@ -1,13 +1,8 @@
-// source/ https://pythonguides.com/react-pagination-component-example/
-// https://www.geeksforgeeks.org/reactjs/how-to-implement-pagination-in-react-using-hooks/
-// help wiring it up from copilot.
-/// src/hooks/usePaginatedFetch.js
-// src/hooks/usePaginatedFetch.js
 // src/hooks/usePaginatedFetch.js
 import { useState, useEffect, useCallback } from 'react';
 import { fetchList } from '../utils/fetchList';
 
-export const usePaginatedFetch = (baseUrl) => {
+export const usePaginatedFetch = (baseUrl, pageSize = 10) => {
   const [items, setItems] = useState([]);
   const [nextPageUrl, setNextPageUrl] = useState(null);
   const [prevPageUrl, setPrevPageUrl] = useState(null);
@@ -19,21 +14,21 @@ export const usePaginatedFetch = (baseUrl) => {
     async (url) => {
       try {
         const res = await fetchList(url || baseUrl);
+        console.log('Fetching:', url || baseUrl, 'Got', res.results?.length, 'items');
 
         setItems(Array.isArray(res?.results) ? res.results : []);
         setNextPageUrl(res?.next || null);
         setPrevPageUrl(res?.previous || null);
         setCurrentPageUrl(url || baseUrl);
 
-        // compute current page based on URL query param
         const urlObj = new URL(url || baseUrl, window.location.origin);
         const pageParam = urlObj.searchParams.get('page') || '1';
         setCurrentPage(parseInt(pageParam, 10));
 
-        // compute total pages
-        const pageSize = res?.results?.length || 1;
         if (res?.count) {
           setTotalPages(Math.ceil(res.count / pageSize));
+        } else {
+          setTotalPages(1);
         }
       } catch (err) {
         console.error('Pagination fetch error:', err);
@@ -44,12 +39,14 @@ export const usePaginatedFetch = (baseUrl) => {
         setTotalPages(1);
       }
     },
-    [baseUrl]
+    [baseUrl, pageSize]
   );
 
+  // Initial load: run only once
   useEffect(() => {
     fetchPage(baseUrl);
-  }, [baseUrl, fetchPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);   // <-- empty array ensures it runs only once
 
   return {
     items,

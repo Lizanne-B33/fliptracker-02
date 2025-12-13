@@ -37,12 +37,6 @@ function CategoryList({ onSelect }) {
           ))}
         </div>
       ))}
-      <ReactPaginate
-        pageCount={pageCount}
-        onPageChange={(selected) => fetchPage(selected.selected + 1)}
-        containerClassName={'pagination'}
-        activeClassName={'active'}
-      />
     </div>
   );
 }
