@@ -35,16 +35,14 @@ const UserProfile = () => {
     } else {
       message = (
         <div>
-          <h2>Welcome, {user.first_name}</h2>
-          <p>Email: {user.email}</p>
-          <p>User ID: {user.id}</p>
+          <h2 className="ft-welcome">Welcome back {user.first_name}</h2>
         </div>
       );
     }
   } else {
     message = (
       <div>
-        <h2>Welcome, Guest</h2>
+        <h2 className="ft-welcome"> Welcome Guest</h2>
       </div>
     );
   }

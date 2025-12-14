@@ -11,7 +11,7 @@ const ProductFastPage = () => {
     <div className="topParent">
       <section className="hero">
         <div className="container text-center py-5">
-          <h1 className="ft-bigtext mb-5">Inventory Product FastAdd*</h1>
+          <h1 className="ft-bigtext mb-5">Inventory Product Fast Add</h1>
           <hr />
           <div className="row welcome-hero">
             <ProductFastForm endpoint="/api/inventory/product_fast/" />

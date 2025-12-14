@@ -5,8 +5,8 @@
         forked from sinansarikaya/django-react-auth
         For more information on this file, see:
         https://github.com/sinansarikaya/django-react-auth
-Other sources include:
-    https://www.django-rest-framework.org/api-guide/pagination/
+See readme for other sources used in this project. 
+AI was used to assist in complex debugging throughout the project.
 
 Following are:
     Details from the cloned project and enhanced for this project.
