@@ -32,6 +32,8 @@ I created **FlipTrackr** because I'm a thrift flipper, and managing inventory th
 
 This app is built to **save time, reduce repetitive tasks, and make inventory management painless**-so I can focus more on flipping and less on logging.
 
+Video: Longer: Video link: https://youtu.be/kdNB_RFl-FI
+Video: Shorter: Video Link: https://youtu.be/ZKJ0nAothCY
 # Features
 
 - User Authentication:
