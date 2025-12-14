@@ -1,8 +1,6 @@
 // this list shows the users what categories have been set
 // in the system. The categories are grouped by Product Type.
 
-import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
-import ReactPaginate from 'react-paginate';
 
 //=========================================
 // DEFINE THE COMPONENT
@@ -10,12 +8,7 @@ import ReactPaginate from 'react-paginate';
 // Self-contained constructor
 // fetches own data internally. It does not expect props, but
 // wires them up itself.
-function CategoryList({ onSelect }) {
-  const {
-    items: categories,
-    pageCount,
-    fetchPage,
-  } = usePaginatedFetch('/api/inventory/category/');
+function CategoryList({ categories, onSelect }) {
 
   // Group categories by product type name
   const grouped = categories.reduce((acc, cat) => {

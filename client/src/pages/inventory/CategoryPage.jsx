@@ -2,6 +2,7 @@
 // Shows a list of categories organized by Product type.
 // Uses URL-based pagination from usePaginatedFetch (same as ProductPage).
 
+// src/pages/inventory/CategoryPage.jsx
 import React, { useState, useEffect } from 'react';
 import { usePaginatedFetch } from '../../hooks/usePaginatedFetch';
 import CategoryForm from '../../components/inventory/CategoryForm';
@@ -10,7 +11,6 @@ import { Button, ButtonGroup, Row, Col } from 'react-bootstrap';
 
 const CategoryPage = () => {
   const [selected, setSelected] = useState(null);
-  const [listVersion, setListVersion] = useState(0);
 
   // Categories pagination
   const {
@@ -20,11 +20,12 @@ const CategoryPage = () => {
     currentPage,
     totalPages,
     fetchPage,
-  } = usePaginatedFetch('/api/inventory/category/');
+  } = usePaginatedFetch('/api/inventory/category/', 16);
 
   // Product types for dropdown
   const { items: productTypes } = usePaginatedFetch(
-    '/api/inventory/product_type/'
+    '/api/inventory/product_type/',
+    16
   );
 
   // Normalize nested product_type objects
@@ -40,16 +41,11 @@ const CategoryPage = () => {
     console.log('Categories after refresh:', categories);
   }, [categories]);
 
-  // Force re-render when changing page
+  // Handle pagination button clicks
   const handlePageChange = async (url) => {
-    if (!url) {
-      console.log('No URL provided to handlePageChange');
-      return;
-    }
-    console.log('Going to page via URL:', url); // <-- this should show
-    await fetchPage(url);
-    setSelected(null);
-    setListVersion((v) => v + 1);
+    if (!url) return;
+    await fetchPage(url); // fetches new page
+    setSelected(null); // clear selection
   };
 
   return (
@@ -58,6 +54,8 @@ const CategoryPage = () => {
         <div className="container text-center py-5">
           <h1 className="ft-bigtext mb-5">Category Management</h1>
           <hr />
+
+          {/* Category Form */}
           <div className="row welcome-hero">
             <CategoryForm
               category={selected}
@@ -68,15 +66,16 @@ const CategoryPage = () => {
             />
           </div>
           <hr />
+
+          {/* Category List */}
           <div className="row lists">
             <CategoryList
-              key={`cat-list-${listVersion}`}
-              items={categories}
-              onSelect={setSelected}
+              categories={categories} // normalized page data
+              onSelect={setSelected} // selection handler
             />
           </div>
 
-          {/* Pagination controls */}
+          {/* Pagination Controls */}
           <Row className="mt-3 align-items-center">
             <Col className="d-flex justify-content-start align-items-center">
               <ButtonGroup>

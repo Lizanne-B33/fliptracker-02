@@ -17,7 +17,9 @@ function ProductTypeList({ items, pageCount, fetchPage, onSelect }) {
     <>
       {/* LIST */}
       <div className="row ft-listItems">
-        {items.length === 0 ? (
+        {!items ? (
+          <div className="col-12 text-center">Loading…</div>
+        ) : items.length === 0 ? (
           <div className="col-12 text-center">No product types found.</div>
         ) : (
           items.map((pt) => (
@@ -33,15 +35,14 @@ function ProductTypeList({ items, pageCount, fetchPage, onSelect }) {
         previousLabel={'← Previous'}
         nextLabel={'Next →'}
         breakLabel={'...'}
-        pageCount={Math.ceil(pageCount) || 1} // ensure integer
+        pageCount={Math.ceil(pageCount) || 1}
         marginPagesDisplayed={2}
         pageRangeDisplayed={5}
-        onPageChange={(selected) => fetchPage(selected.selected + 1)} // numeric page
+        onPageChange={(selected) => fetchPage(`?page=${selected.selected + 1}`)}
         containerClassName={'pagination'}
         activeClassName={'active'}
       />
     </>
   );
 }
-
 export default ProductTypeList;
