@@ -2,6 +2,7 @@ FlipTrackr (Minimal Viable Product) MVP
 
 # Project Overview
 
+
 ## **FlipTrackr: Streamlined Inventory for Thrift Flippers**
 
 Tired of juggling notebooks, scraps of paper, and endless POS entries? **FlipTrackr** is built for thrift flippers who want to:
@@ -99,7 +100,7 @@ FlipTracker-02/
 # Setup / Installation
 
 - Clone the repository & create a virtual environment:
-  - git clone <https://github.com/Lizanne-B33/fliptracker-02.git>
+  - git clone --branch rollback-fix https://github.com/Lizanne-B33/fliptracker-02.git
   - cd fliptracker-02
   - python -m venv venv // create a
   - venv/bin/activate
